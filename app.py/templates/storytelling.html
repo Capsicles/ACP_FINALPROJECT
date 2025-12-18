@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Storytelling Mode</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .card {
+      max-width: 850px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 32px;
+    }
+    #storyText p {
+      color: #333;
+      font-size: 18px;
+      line-height: 1.8;
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+    }
+    #questionsArea h3 {
+      color: #667eea;
+      font-size: 24px;
+      margin: 20px 0;
+    }
+    button {
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      margin: 8px 0;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      display: block;
+      width: 100%;
+      text-align: left;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    .back-home-btn {
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      display: inline-block;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    .back-home-btn:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    .home-fab { position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); right: 22px; z-index: 1000; border-radius: 999px; padding: 12px 20px; }
+    button.selected {
+      border: 3px solid #667eea;
+      background: rgba(102, 126, 234, 0.2);
+      color: #667eea;
+    }
+    div[style*="display: flex"] > button,
+    div[style*="display: flex"] > a.back-home-btn {
+      margin: 0 !important;
+      display: inline-block !important;
+      width: auto !important;
+      text-align: center !important;
+    }
+    .score-container {
+      text-align: center;
+      padding: 18px;
+      background: white;
+      border-radius: 15px;
+      margin: 12px 0;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    .score-title {
+      font-size: 18px;
+      color: #667eea;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .score-display {
+      font-size: 28px;
+      font-weight: bold;
+      color: #667eea;
+      margin: 10px 0;
+      padding: 8px 16px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 10px;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      display: inline-block;
+    }
+    .score-fraction {
+      font-size: 14px;
+      color: #667eea;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .score-percentage {
+      font-size: 14px;
+      color: #667eea;
+      font-weight: bold;
+      margin: 6px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Storytelling Mode</h1>
+    <div id="storyText"></div>
+    <div id="questionsArea" style="margin-top:18px"></div>
+    <div style="margin-top:15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <a href="/home" class="back-home-btn home-fab" onclick="try{stopAllAudio&&stopAllAudio();}catch(e){}">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    const story = {{ story | tojson }};
+    let selectedAnswer = null;
+    let answered = false;
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function speak(t){ if(window.speechSynthesis){ const u=new SpeechSynthesisUtterance(t); window.speechSynthesis.speak(u); }}
+    function stopAllAudio(){ if(window.speechSynthesis){ try{ window.speechSynthesis.cancel(); }catch(e){} } }
+    
+    function renderQuestion() {
+      if(currentQuestionIndex >= story.questions.length) {
+        // All questions answered
+        const percentage = Math.round((score / story.questions.length) * 100);
+        document.getElementById('questionsArea').innerHTML = `
+          <div class="score-container">
+            <div class="score-title">Complete! 🎉</div>
+            <div class="score-display">${score}</div>
+            <div class="score-fraction">out of ${story.questions.length} questions</div>
+            <div class="score-percentage">${percentage}% Correct</div>
+          </div>
+        `;
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'none';
+        return;
+      }
+      
+      const q = story.questions[currentQuestionIndex];
+      document.getElementById('questionsArea').innerHTML = `<h3>${q.question}</h3>` + q.options.map((o,i)=>`<div><button class="story-opt" onclick="selectAnswer(${i})">${String.fromCharCode(65+i)}. ${o}</button></div>`).join('');
+      speak(q.question + '. Options: ' + q.options.map((o,i)=> (String.fromCharCode(65+i)+', '+o)).join('. '));
+      
+      // Reset state
+      selectedAnswer = null;
+      answered = false;
+    }
+
+    function selectAnswer(i) {
+      if(answered) return;
+      stopAllAudio();
+      selectedAnswer = i;
+      const buttons = document.querySelectorAll('.story-opt');
+      
+      // Remove previous selection
+      buttons.forEach(btn => {
+        btn.classList.remove('selected');
+        btn.style.background = '';
+        btn.style.color = '';
+      });
+      
+      // Highlight selected option
+      buttons[i].classList.add('selected');
+      
+      // Immediately submit answer and proceed automatically
+      setTimeout(()=>submitAnswer(), 250);
+    }
+
+    function submitAnswer() {
+      if(answered || selectedAnswer === null) return;
+      answered = true;
+      const q = story.questions[currentQuestionIndex];
+      const buttons = document.querySelectorAll('.story-opt');
+      
+      if(selectedAnswer === q.correct) { 
+        score++;
+        buttons[selectedAnswer].style.background='#2ed573';
+        buttons[selectedAnswer].style.color='white';
+      } else { 
+        buttons[selectedAnswer].style.background='#ff4757';
+        buttons[selectedAnswer].style.color='white';
+        // Highlight correct answer
+        buttons[q.correct].style.background='#2ed573';
+        buttons[q.correct].style.color='white';
+      }
+      
+      // Disable all options
+      buttons.forEach(btn => btn.disabled = true);
+      
+      // Automatically go to next question after short delay
+      setTimeout(()=>{
+        currentQuestionIndex++;
+        renderQuestion();
+      }, 1000);
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      renderQuestion();
+    }
+
+    // Initialize
+    document.getElementById('storyText').innerHTML = `<p>${story.text}</p>`;
+    speak(story.text);
+    setTimeout(()=>{
+      renderQuestion();
+      // allow keyboard 1-4 to select answer
+      document.addEventListener('keydown', (e)=>{ 
+        if(!answered && ['1','2','3','4'].includes(e.key)){ 
+          const idx = Number(e.key)-1; 
+          const btn=document.querySelectorAll('.story-opt')[idx]; 
+          if(btn) btn.click(); 
+        }
+      });
+      // voice: accept digit words or numbers
+      if(window.webkitSpeechRecognition || window.SpeechRecognition){ 
+        const Rec = window.SpeechRecognition || window.webkitSpeechRecognition; 
+        const rs = new Rec(); 
+        rs.lang='en-US'; 
+        rs.continuous=true; 
+        rs.onresult = (ev)=>{ 
+          const t = ev.results[ev.results.length-1][0].transcript.trim().toLowerCase(); 
+          if(answered) return;
+          let m = t.match(/(\b1\b|one)/); if(m){ document.querySelectorAll('.story-opt')[0].click(); return; } 
+          m = t.match(/(\b2\b|two)/); if(m){ document.querySelectorAll('.story-opt')[1].click(); return; } 
+          m = t.match(/(\b3\b|three)/); if(m){ document.querySelectorAll('.story-opt')[2].click(); return; } 
+          m = t.match(/(\b4\b|four)/); if(m){ document.querySelectorAll('.story-opt')[3].click(); return; } 
+          m = t.match(/([a-d])/); if(m){ const i = m[1].charCodeAt(0)-97; document.querySelectorAll('.story-opt')[i].click(); }
+        }; 
+        try{ rs.start(); }catch(e){} 
+      }
+    }, 1600);
+
+  </script>
+</body>
+</html>

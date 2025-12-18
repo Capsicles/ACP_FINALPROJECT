@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Riddle Challenge - Accessible Game</title>
+<style>
+  body{font-family:Arial;padding:20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff}
+  .card{background:#fff;color:#222;border-radius:12px;padding:20px;max-width:720px;margin:40px auto}
+  .question{margin-top:20px;font-size:20px;font-weight:bold;color:#333}
+  .options{margin:15px 0}
+  .option-btn{display:block;margin:10px 0;padding:15px;border-radius:8px;width:100%;text-align:left;background:#f5f5f5;border:2px solid #ddd;cursor:pointer;font-size:16px;transition:all 0.3s}
+  .option-btn:hover{background:#667eea;color:white;border-color:#667eea}
+  .controls{margin-top:20px;display:flex;gap:10px;align-items:center}
+  .timer{font-weight:bold;color:#ff4757;font-size:18px}
+  .status{color:#666;margin-bottom:15px;font-size:16px;min-height:40px}
+  .mic-status{background:#ff4757;color:white;padding:8px 15px;border-radius:15px;font-size:14px;margin-left:auto}
+  .hidden{display:none}
+  .score{font-weight:bold;color:#51cf66;font-size:18px}
+  .voice-feedback{color:#667eea;font-weight:bold;margin-top:10px}
+  .sr-only {position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden;}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h2>🧩 Riddle Challenge</h2>
+    <div class="status" id="karen">Karen: Loading riddle challenge...</div>
+    <div id="questionArea"></div>
+    <div id="voiceFeedback" class="voice-feedback"></div>
+    <div class="controls">
+      <div class="timer" id="timer">--</div>
+      <button id="nextBtn" class="hidden">Next</button>
+      <div class="mic-status" id="micStatus">🎤 Mic: Off</div>
+    </div>
+  </div>
+  <div id="audioCues" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+// HARDCODED RIDDLES
+const questions = [
+  {
+    question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
+    options: ["An echo", "A shadow", "A thought", "A dream"],
+    answer: 0
+  },
+  {
+    question: "The more you take, the more you leave behind. What am I?",
+    options: ["Footsteps", "Breath", "Money", "Time"],
+    answer: 0
+  },
+  {
+    question: "What has keys but can't open locks?",
+    options: ["A map", "A piano", "A secret", "A computer"],
+    answer: 1
+  },
+  {
+    question: "I'm not alive, but I can grow; I don't have lungs, but I need air; I don't have a mouth, but water kills me. What am I?",
+    options: ["Fire", "A plant", "A cloud", "A stone"],
+    answer: 0
+  },
+  {
+    question: "What has a head, a tail, is brown, and has no legs?",
+    options: ["A snake", "A penny", "A worm", "A stick"],
+    answer: 1
+  },
+  {
+    question: "What can travel around the world while staying in a corner?",
+    options: ["A stamp", "A thought", "Light", "Sound"],
+    answer: 0
+  },
+  {
+    question: "What has an eye but cannot see?",
+    options: ["A needle", "A potato", "A hurricane", "A blind person"],
+    answer: 0
+  },
+  {
+    question: "I'm light as a feather, but the strongest person can't hold me for more than 5 minutes. What am I?",
+    options: ["Breath", "A secret", "A thought", "A bubble"],
+    answer: 0
+  },
+  {
+    question: "What has a neck but no head?",
+    options: ["A bottle", "A shirt", "A river", "A guitar"],
+    answer: 0
+  },
+  {
+    question: "What gets wet while drying?",
+    options: ["A towel", "Hair", "Clothes", "The sun"],
+    answer: 0
+  }
+];
+
+let currentQuestionIndex = 0;
+let score = 0;
+let timerInterval;
+let recognition;
+let isListening = false;
+
+// Initialize speech recognition
+function initSpeechRecognition() {
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+    recognition.maxAlternatives = 3;
+
+    recognition.onstart = () => {
+      isListening = true;
+      document.getElementById('micStatus').textContent = '🎤 Mic: Listening...';
+      document.getElementById('micStatus').style.background = '#51cf66';
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+      console.log('Voice input:', transcript);
+      document.getElementById('voiceFeedback').textContent = `Heard: "${transcript}"`;
+      processVoiceAnswer(transcript);
+    };
+
+    recognition.onerror = (event) => {
+      console.log('Speech recognition error:', event.error);
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      document.getElementById('micStatus').textContent = '🎤 Mic: Off';
+      document.getElementById('micStatus').style.background = '#ff4757';
+    };
+  } else {
+    console.log('Speech recognition not supported');
+    document.getElementById('micStatus').textContent = '🎤 Mic: Not Supported';
+  }
+}
+
+function startListening() {
+  if (recognition && !isListening) {
+    try {
+      recognition.start();
+    } catch (e) {
+      console.log('Speech recognition start error:', e);
+      setTimeout(() => startListening(), 1000);
+    }
+  }
+}
+
+function stopListening() {
+  if (recognition && isListening) {
+    try {
+      recognition.stop();
+    } catch (e) {
+      console.log('Speech recognition stop error:', e);
+    }
+  }
+}
+
+function processVoiceAnswer(transcript) {
+  console.log('Processing voice answer:', transcript);
+  
+  let answerIndex = -1;
+  
+  // Check for letters A-D
+  const letterMatch = transcript.match(/\b(a|b|c|d)\b/);
+  if (letterMatch) {
+    const letter = letterMatch[1].toUpperCase();
+    answerIndex = letter.charCodeAt(0) - 65;
+    console.log('Letter detected:', letter, 'Index:', answerIndex);
+  }
+  
+  // Check for numbers 1-4
+  if (answerIndex === -1) {
+    const numberMatch = transcript.match(/\b(1|2|3|4)\b/);
+    if (numberMatch) {
+      const num = numberMatch[1];
+      console.log('Number detected:', num);
+      answerIndex = parseInt(num) - 1;
+    }
+  }
+  
+  // Check for literal answers
+  if (answerIndex === -1 && currentQuestionIndex < questions.length) {
+    const currentQ = questions[currentQuestionIndex];
+    const options = currentQ.options;
+    
+    for (let i = 0; i < options.length; i++) {
+      const optionText = options[i].toLowerCase();
+      
+      if (transcript.includes(optionText) || 
+          optionText.includes(transcript) ||
+          transcript.split(' ').some(word => optionText.includes(word) && word.length > 3)) {
+        answerIndex = i;
+        console.log('Literal answer detected:', optionText, 'Index:', answerIndex);
+        break;
+      }
+    }
+  }
+  
+  // Check for "play again" and "exit" commands at the end
+  if (currentQuestionIndex >= questions.length) {
+    if (transcript.includes('play again') || transcript.includes('again') || transcript === '1') {
+      handleMenuChoice(1);
+      return;
+    } else if (transcript.includes('exit') || transcript.includes('home') || transcript === '2') {
+      handleMenuChoice(2);
+      return;
+    }
+  }
+  
+  if (answerIndex !== -1 && answerIndex >= 0 && answerIndex <= 3) {
+    console.log('Valid answer selected:', answerIndex);
+    const selectedLetter = String.fromCharCode(65 + answerIndex);
+    document.getElementById('voiceFeedback').textContent += ` → Selected: ${selectedLetter}`;
+    
+    stopListening();
+    clearInterval(timerInterval);
+    checkAnswer(answerIndex);
+  } else {
+    console.log('No valid answer found in speech');
+    document.getElementById('voiceFeedback').textContent += ' → No valid answer detected';
+    speak("Please try again, I didn't hear you clearly. Can you please try again?");
+  }
+}
+
+// NO API CALL - Use hardcoded questions directly
+function loadQuestions() {
+  console.log('Loading riddles...');
+  
+  if (questions && questions.length > 0) {
+    document.getElementById('karen').textContent = 'Karen: Riddles loaded successfully!';
+    startGameIntroduction();
+  } else {
+    document.getElementById('karen').textContent = 'Karen: Error loading riddles.';
+    speak("Sorry, there was an error loading the riddles.");
+  }
+}
+
+// EXACT SAME INTRODUCTION STYLE
+function startGameIntroduction() {
+  speak("Welcome to Riddle Challenge. I'm Karen, your audio guide. In this game, I will ask you ten tricky riddles to solve. To answer, you can: Say the answer, say A B C or D, or press 1 for A, 2 for B, 3 for C, 4 for D. Each riddle has a 30-second time limit. Are you ready to begin?", () => {
+    setTimeout(() => {
+      speak("Great! Let's start with the first riddle.", () => {
+        setTimeout(() => showQuestion(currentQuestionIndex), 2000);
+      });
+    }, 1000);
+  });
+}
+
+function showQuestion(questionIndex) {
+  if (questionIndex >= questions.length) {
+    endGame();
+    return;
+  }
+  
+  const q = questions[questionIndex];
+  const area = document.getElementById('questionArea');
+  
+  area.innerHTML = `
+    <div class='question'>Question ${questionIndex + 1}: ${q.question}</div>
+    <div class='options'>
+      <button class='option-btn' onclick="checkAnswer(0)">A. ${q.options[0]}</button>
+      <button class='option-btn' onclick="checkAnswer(1)">B. ${q.options[1]}</button>
+      <button class='option-btn' onclick="checkAnswer(2)">C. ${q.options[2]}</button>
+      <button class='option-btn' onclick="checkAnswer(3)">D. ${q.options[3]}</button>
+    </div>
+  `;
+  
+  const questionText = `Question ${questionIndex + 1}: ${q.question}. Options: A. ${q.options[0]}, B. ${q.options[1]}, C. ${q.options[2]}, D. ${q.options[3]}. You have 30 seconds.`;
+  
+  document.getElementById('karen').textContent = `Karen: Question ${questionIndex + 1} of 10`;
+  document.getElementById('voiceFeedback').textContent = '';
+  
+  speak(questionText, () => {
+    startTimer(30);
+    startListening();
+  });
+}
+
+function checkAnswer(answerIndex) {
+  console.log('Checking answer:', answerIndex);
+  
+  const q = questions[currentQuestionIndex];
+  const isCorrect = answerIndex === q.answer;
+  const selectedLetter = String.fromCharCode(65 + answerIndex);
+  
+  if (isCorrect) {
+    score++;
+    speak("Correct!");
+    // award 1 point for correct answer
+    addScore(10);
+    document.getElementById('karen').textContent = `Karen: Correct! Score: ${score}/10`;
+  } else {
+    const correctLetter = String.fromCharCode(65 + q.answer);
+    speak(`Wrong. Correct answer is ${correctLetter}`);
+    document.getElementById('karen').textContent = `Karen: Incorrect. Score: ${score}/10`;
+  }
+  
+  currentQuestionIndex++;
+  
+  setTimeout(() => {
+    if (currentQuestionIndex < questions.length) {
+      showQuestion(currentQuestionIndex);
+    } else {
+      endGame();
+    }
+  }, 2500);
+}
+
+// send score increment to server (uses session user if available)
+async function addScore(points) {
+  try {
+    await fetch('/api/add-score', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({score: points, game: 'riddle'})
+    });
+  } catch (e) {
+    console.log('addScore error', e);
+  }
+}
+
+function endGame() {
+  document.getElementById('questionArea').innerHTML = '';
+  document.getElementById('voiceFeedback').textContent = '';
+  
+  const resultText = `Game over! You scored ${score} out of 10. Would you like to play again or exit? Say play again or press 1, or say exit or press 2.`;
+  
+  document.getElementById('karen').innerHTML = `Karen: Game complete! Score: ${score}/10`;
+  
+  speak(resultText, () => {
+    startListeningForMenuChoice();
+  });
+}
+
+function startListeningForMenuChoice() {
+  startListening();
+  
+  const menuKeyHandler = (e) => {
+    if (e.key === '1') {
+      handleMenuChoice(1);
+    } else if (e.key === '2') {
+      handleMenuChoice(2);
+    }
+  };
+  window.addEventListener('keydown', menuKeyHandler);
+}
+
+function handleMenuChoice(choice) {
+  stopListening();
+  if (choice === 1) {
+    speak("Starting new game!");
+    setTimeout(() => {
+      currentQuestionIndex = 0;
+      score = 0;
+      showQuestion(currentQuestionIndex);
+    }, 1500);
+  } else if (choice === 2) {
+    speak("Going to homepage.");
+    setTimeout(() => window.location.href = '/', 1500);
+  }
+  window.removeEventListener('keydown', menuKeyHandler);
+}
+
+function startTimer(seconds) {
+  clearInterval(timerInterval);
+  let timeLeft = seconds;
+  document.getElementById('timer').textContent = timeLeft;
+  
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    document.getElementById('timer').textContent = timeLeft;
+    
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      stopListening();
+      speak("Time's up!");
+      currentQuestionIndex++;
+      setTimeout(() => {
+        if (currentQuestionIndex < questions.length) {
+          showQuestion(currentQuestionIndex);
+        } else {
+          endGame();
+        }
+      }, 2000);
+    }
+  }, 1000);
+}
+
+function speak(text, callback) {
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    
+    utterance.onend = () => {
+      if (callback) callback();
+    };
+    
+    utterance.onerror = () => {
+      if (callback) callback();
+    };
+    
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  } else if (callback) {
+    setTimeout(callback, 2000);
+  }
+}
+
+// Keyboard support
+window.addEventListener('keydown', (e) => {
+  if (e.key >= '1' && e.key <= '4' && currentQuestionIndex < questions.length) {
+    stopListening();
+    clearInterval(timerInterval);
+    const answerIndex = parseInt(e.key) - 1;
+    checkAnswer(answerIndex);
+  }
+});
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('Initializing riddle challenge game...');
+  initSpeechRecognition();
+  loadQuestions();
+});
+</script>
+</body>
+</html>

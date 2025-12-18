@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Flask (app.py)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}\\venv\\Scripts\\python.exe",
+      "args": ["${workspaceFolder}\\app.py\\app.py"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

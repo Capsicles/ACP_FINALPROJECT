@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - HearMeOut</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .leaderboard-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .leaderboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .leaderboard-header h1 {
+            font-size: 32px;
+            font-weight: bold;
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+        .home-fab {
+            position: fixed;
+            bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+            right: 22px;
+            z-index: 1000;
+            border-radius: 999px;
+            padding: 12px 20px;
+        }
+
+        /* Filter UI */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.10);
+            border: 1px solid rgba(102, 126, 234, 0.25);
+        }
+        .filter-bar label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+        .filter-select {
+            appearance: none;
+            background: white;
+            color: #333;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
+            min-width: 180px;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.12);
+        }
+
+        .leaderboard-table-header {
+            display: grid;
+            grid-template-columns: 50px 2.5fr 1fr 1.2fr 60px;
+            gap: 15px;
+            padding: 12px 20px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.98);
+            font-size: 13px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(102, 126, 234, 0.25);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .header-col {
+            text-align: center;
+        }
+
+        .header-col.rank-col {
+            text-align: left;
+        }
+
+        .header-col.name-col {
+            text-align: left;
+        }
+
+        .leaderboard-list {
+            margin-bottom: 30px;
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 36px 1.5fr 0.8fr 1fr 36px;
+            gap: 7px;
+            align-items: center;
+            background: white;
+            padding: 7px 10px;
+            margin-bottom: 6px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease-out;
+            animation-fill-mode: both;
+            border: 1.5px solid rgba(102, 126, 234, 0.08);
+            min-height: 34px;
+        }
+        @media (max-width: 600px) {
+            .leaderboard-row {
+                grid-template-columns: 28px 1.8fr 0.7fr 0.9fr 28px;
+                padding: 4px 5px;
+                margin-bottom: 4px;
+                border-radius: 7px;
+                font-size: 13px;
+                min-height: 28px;
+            }
+            .leaderboard-header, .leaderboard-table-header {
+                font-size: 12px;
+                padding: 7px 8px;
+                gap: 6px;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .leaderboard-row:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .leaderboard-row:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .leaderboard-row:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .leaderboard-row:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .leaderboard-row:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .leaderboard-row:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        .leaderboard-row:nth-child(7) {
+            animation-delay: 0.7s;
+        }
+
+        .leaderboard-row:nth-child(8) {
+            animation-delay: 0.8s;
+        }
+
+        .leaderboard-row:nth-child(9) {
+            animation-delay: 0.9s;
+        }
+
+        .leaderboard-row:nth-child(10) {
+            animation-delay: 1.0s;
+        }
+
+        .leaderboard-row:nth-child(n+11) {
+            animation-delay: 1.1s;
+        }
+
+        .leaderboard-row:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .leaderboard-row.top-1 {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border: 4px solid #ffb300;
+            box-shadow: 0 8px 30px rgba(255, 179, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .leaderboard-row.top-1::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .leaderboard-row.top-2 {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+            border: 4px solid #a8a8a8;
+            box-shadow: 0 8px 30px rgba(192, 192, 192, 0.5);
+        }
+
+        .leaderboard-row.top-3 {
+            background: linear-gradient(135deg, #cd7f32 0%, #e6a85c 100%);
+            border: 4px solid #b87333;
+            box-shadow: 0 8px 30px rgba(205, 127, 50, 0.5);
+        }
+
+        .rank-badge {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 30px;
+        }
+
+        .rank-badge.top-1 {
+            color: #ff6b00;
+            font-size: 24px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .rank-badge.top-2 {
+            color: #5a5a5a;
+            font-size: 20px;
+        }
+
+        .rank-badge.top-3 {
+            color: #8b4513;
+            font-size: 18px;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .leaderboard-row:hover .avatar {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .leaderboard-row.top-1 .avatar {
+            border-color: #ffb300;
+            background: linear-gradient(135deg, #ffb300 0%, #ffd700 100%);
+            box-shadow: 0 4px 15px rgba(255, 179, 0, 0.5);
+        }
+
+        .leaderboard-row.top-2 .avatar {
+            border-color: #a8a8a8;
+            background: linear-gradient(135deg, #a8a8a8 0%, #c0c0c0 100%);
+            box-shadow: 0 4px 15px rgba(192, 192, 192, 0.5);
+        }
+
+        .leaderboard-row.top-3 .avatar {
+            border-color: #b87333;
+            background: linear-gradient(135deg, #b87333 0%, #cd7f32 100%);
+            box-shadow: 0 4px 15px rgba(205, 127, 50, 0.5);
+        }
+
+        .player-name-text {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+            letter-spacing: 0.3px;
+        }
+
+        .leaderboard-row.top-1 .player-name-text,
+        .leaderboard-row.top-2 .player-name-text,
+        .leaderboard-row.top-3 .player-name-text {
+            color: #1a1a1a;
+            font-weight: 800;
+        }
+
+        .score-text {
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 16px;
+            padding: 6px 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .leaderboard-row.top-1 .score-text {
+            color: #ff6b00;
+            font-size: 18px;
+            background: rgba(255, 107, 0, 0.15);
+            border-color: rgba(255, 107, 0, 0.3);
+        }
+
+        .leaderboard-row.top-2 .score-text {
+            color: #4a4a4a;
+            font-size: 17px;
+            background: rgba(74, 74, 74, 0.1);
+            border-color: rgba(74, 74, 74, 0.2);
+        }
+
+        .leaderboard-row.top-3 .score-text {
+            color: #8b4513;
+            font-size: 17px;
+            background: rgba(139, 69, 19, 0.15);
+            border-color: rgba(139, 69, 19, 0.3);
+        }
+
+        .game-text {
+            text-align: center;
+            color: #667eea;
+            font-size: 12px;
+            padding: 6px 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            font-weight: 600;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            text-transform: capitalize;
+        }
+
+        .leaderboard-row.top-1 .game-text,
+        .leaderboard-row.top-2 .game-text,
+        .leaderboard-row.top-3 .game-text {
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .medal-icon {
+            text-align: center;
+            font-size: 24px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            color: white;
+            padding: 50px 25px;
+            background: rgba(102, 126, 234, 0.25);
+            border-radius: 20px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .empty-state h2 {
+            font-size: 26px;
+            margin-bottom: 12px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        @media (max-width: 768px) {
+            .leaderboard-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .leaderboard-header h1 {
+                font-size: 26px;
+                padding: 12px 24px;
+            }
+
+            .back-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .leaderboard-table-header,
+            .leaderboard-row {
+                grid-template-columns: 45px 1.8fr 1fr 1.2fr 50px;
+                gap: 10px;
+                padding: 12px 15px;
+            }
+
+            .header-col {
+                font-size: 12px;
+            }
+
+            .player-name-text {
+                font-size: 14px;
+            }
+
+            .score-text {
+                font-size: 14px;
+                padding: 5px 10px;
+            }
+
+            .game-text {
+                font-size: 11px;
+                padding: 5px 8px;
+            }
+
+            .avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+
+            .rank-badge {
+                font-size: 14px;
+            }
+
+            .rank-badge.top-1 {
+                font-size: 20px;
+            }
+
+            .rank-badge.top-2 {
+                font-size: 18px;
+            }
+
+            .rank-badge.top-3 {
+                font-size: 16px;
+            }
+
+            .medal-icon {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            .leaderboard-table-header,
+            .leaderboard-row {
+                grid-template-columns: 40px 1.5fr 1fr 45px;
+                gap: 8px;
+                padding: 12px 10px;
+            }
+
+            .game-text {
+                display: none;
+            }
+
+            .header-col.game-col {
+                display: none;
+            }
+
+            .leaderboard-header h1 {
+                font-size: 22px;
+                padding: 10px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="leaderboard-container">
+        <div class="leaderboard-header">
+            <h1>🏆 LEADERBOARD</h1>
+            <div class="filter-bar">
+                <label for="gameFilter">Filter by game</label>
+                <select id="gameFilter" class="filter-select" aria-label="Filter by game">
+                    <option>Loading...</option>
+                </select>
+            </div>
+            <a href="/home" class="back-btn home-fab">← BACK TO HOME</a>
+        </div>
+
+        {% if players %}
+        <div class="leaderboard-table-header">
+            <span class="header-col rank-col">Rank</span>
+            <span class="header-col name-col">Player Name</span>
+            <span class="header-col">Score</span>
+            <span class="header-col game-col">Game</span>
+            <span class="header-col"></span>
+        </div>
+
+        <div class="leaderboard-list" id="leaderboardList">
+            {% for player in players %}
+            <div class="leaderboard-row {% if loop.index == 1 %}top-1{% elif loop.index == 2 %}top-2{% elif loop.index == 3 %}top-3{% endif %}">
+                <div class="rank-badge {% if loop.index == 1 %}top-1{% elif loop.index == 2 %}top-2{% elif loop.index == 3 %}top-3{% endif %}">
+                    {% if loop.index == 1 %}🥇
+                    {% elif loop.index == 2 %}🥈
+                    {% elif loop.index == 3 %}🥉
+                    {% else %}#{{ loop.index }}
+                    {% endif %}
+                </div>
+                <div class="player-info">
+                    <div class="avatar">{{ player.name[0].upper() }}</div>
+                    <span class="player-name-text">{{ player.name }}</span>
+                </div>
+                <span class="score-text">{{ player.score }}</span>
+                <span class="game-text">{{ player.game }}</span>
+                <div class="medal-icon">
+                    {% if loop.index <= 3 %}🏆{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" id="emptyState">
+            <h2>📊 No Scores Yet</h2>
+            <p>Be the first to play and set a high score!</p>
+        </div>
+        {% endif %}
+        <!-- Always-present empty state for dynamic updates -->
+        <div class="empty-state" id="dynamicEmptyState" style="display:none;">
+            <h2>📊 No Scores Yet</h2>
+            <p>Be the first to play and set a high score!</p>
+        </div>
+    </div>
+    <script>
+      // Populate game filter and update leaderboard dynamically
+      const gameFilter = document.getElementById('gameFilter');
+      const listEl = document.getElementById('leaderboardList');
+      const headerEl = document.querySelector('.leaderboard-table-header');
+      const emptyEl = document.getElementById('dynamicEmptyState') || document.getElementById('emptyState');
+
+      async function fetchGames(){
+        try{
+          const r = await fetch('/api/leaderboard/games');
+          const j = await r.json();
+          const games = (j && j.success && Array.isArray(j.games)) ? j.games : ['All Scores'];
+          gameFilter.innerHTML = '';
+          // Ensure All Scores is first
+          const uniq = Array.from(new Set(['All Scores', ...games]));
+          uniq.forEach((g,idx)=>{
+            const opt = document.createElement('option');
+            opt.value = g; opt.textContent = g; gameFilter.appendChild(opt);
+          });
+          gameFilter.value = 'All Scores';
+        }catch(e){
+          gameFilter.innerHTML = '<option>All Scores</option>';
+        }
+      }
+
+      function renderRows(players){
+        if(!listEl) return;
+        if(!players || players.length===0){
+          listEl.innerHTML = '';
+          if(headerEl) headerEl.style.display = 'none';
+          if(emptyEl) emptyEl.style.display = 'block';
+          return;
+        }
+        if(headerEl) headerEl.style.display = 'grid';
+        if(emptyEl) emptyEl.style.display = 'none';
+        listEl.innerHTML = players.map((p, i)=>{
+          const rank = i+1;
+          const topClass = rank===1? 'top-1' : rank===2? 'top-2' : rank===3? 'top-3' : '';
+          const badge = rank===1? '🥇' : rank===2? '🥈' : rank===3? '🥉' : '#'+rank;
+          const avatar = (p.name||'?').toString().charAt(0).toUpperCase();
+          return `
+            <div class="leaderboard-row ${topClass}">
+              <div class="rank-badge ${topClass}">${badge}</div>
+              <div class="player-info">
+                <div class="avatar">${avatar}</div>
+                <span class="player-name-text">${p.name||''}</span>
+              </div>
+              <span class="score-text">${p.score||0}</span>
+              <span class="game-text">${p.game||''}</span>
+              <div class="medal-icon">${rank<=3?'🏆':''}</div>
+            </div>`;
+        }).join('');
+      }
+
+      async function loadLeaderboard(gameLabel){
+        const query = encodeURIComponent(gameLabel||'All Scores');
+        try{
+          const r = await fetch(`/api/leaderboard?game=${query}`);
+          const j = await r.json();
+          if(j && j.success){ renderRows(j.players||[]); }
+          else { renderRows([]); }
+        }catch(e){ renderRows([]); }
+      }
+
+      gameFilter && gameFilter.addEventListener('change', ()=>{
+        loadLeaderboard(gameFilter.value);
+      });
+
+      (async function init(){
+        await fetchGames();
+        await loadLeaderboard(gameFilter ? gameFilter.value : 'All Scores');
+      })();
+    </script>
+</body>
+</html>

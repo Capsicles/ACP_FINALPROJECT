@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HearMeOut</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            /* widened so three 320px cards + gaps fit on one row */
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .leaderboard-btn {
+            position: absolute;
+            top: 60px;
+            right: 25px;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .leaderboard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+        }
+
+        .top-nav {
+            position: absolute;
+            top: 16px;
+            right: 24px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .user-info {
+            color: white;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 8px 12px;
+            border-radius: 18px;
+            backdrop-filter: blur(8px);
+            display:flex;align-items:center;gap:10px
+        }
+
+        .logout-btn {
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.4);
+        }
+
+        .games-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            align-items: stretch; /* ensure items stretch to equal height */
+            max-width: 1000px; /* keep grid area constrained so wrapping is predictable */
+            margin: 0 auto;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: #333;
+            flex: 0 0 320px; /* fixed card width for consistent columns */
+            max-width: 320px;
+            min-width: 260px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* space content vertically */
+            min-height: 300px; /* uniform height */
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .game-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .game-card h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+
+        .game-card p {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .games-grid {
+                justify-content: center;
+            }
+
+            .game-card {
+                flex: 1 1 100%;
+                max-width: 720px;
+                min-height: 220px;
+            }
+
+            .top-nav {
+                position: static;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                margin-bottom: 20px;
+                gap: 10px;
+            }
+
+            .user-info,
+            .leaderboard-btn,
+            .logout-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+        <div class="top-nav">
+                <div class="user-info">👤 <span id="username"></span>
+                    <div style="background:linear-gradient(90deg,#ffd166,#ff6b6b);padding:6px 10px;border-radius:14px;color:#222;font-weight:700;font-size:13px">🏆 <span id="userScore">0</span></div>
+                </div>
+
+                <div id="notifWrapper" style="position:relative">
+                    <button id="notifBtn" title="Notifications" style="background:rgba(255,255,255,0.08);border:0;padding:8px 12px;border-radius:20px;cursor:pointer;color:white;display:flex;align-items:center;gap:8px">
+                        🔔 <span id="notifCount" style="background:#ff4757;color:white;padding:2px 8px;border-radius:12px;font-weight:bold;display:none;font-size:13px">0</span>
+                    </button>
+                    <div id="notifDropdown" style="display:none;position:absolute;right:0;top:44px;width:360px;max-height:360px;overflow:auto;background:#fff;color:#222;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.2);z-index:40;padding:10px">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                            <strong>Notifications</strong>
+                            <button id="notifRefresh" style="background:transparent;border:0;color:#667eea;cursor:pointer">Refresh</button>
+                        </div>
+                        <div id="notifList">Loading...</div>
+                        <div style="margin-top:8px;text-align:center"><a href="/admin/notifications" style="color:#667eea;text-decoration:none">Open admin notifications</a></div>
+                    </div>
+                </div>
+
+                <a href="/leaderboard" class="leaderboard-btn">🏆 LEADERBOARD</a>
+                <a href="/logout" class="logout-btn">Sign Out</a>
+        </div>
+
+    <div class="container">
+        <header>
+            <h1>🎮 HearMeOut</h1>
+            <p class="subtitle">Your Voice. Your Game.</p>
+        </header>
+
+        <div id="notifications" style="max-width:720px;margin:0 auto 20px;display:none"> </div>
+
+        <div class="games-grid">
+            <a href="/knowledge_check" class="game-card">
+                <div class="game-icon">🧠</div>
+                <h2>Knowledge Check</h2>
+                <p>Test your general knowledge with multiple-choice questions</p>
+                <button class="play-btn">PLAY NOW</button>
+            </a>
+            
+            <a href="/math_quick" class="game-card">
+                <div class="game-icon">➗</div>
+                <h2>Math Quick Solve</h2>
+                <p>Solve math problems against the clock</p>
+                <button class="play-btn">PLAY NOW</button>
+            </a>
+            
+            <a href="/riddle" class="game-card">
+                <div class="game-icon">❓</div>
+                <h2>Riddle Challenge</h2>
+                <p>Can you solve these tricky riddles?</p>
+                <button class="play-btn">PLAY NOW</button>
+            </a>
+            
+            <a href="/vocabulary" class="game-card">
+                <div class="game-icon">📚</div>
+                <h2>Vocabulary Trainer</h2>
+                <p>Expand your vocabulary with word challenges</p>
+                <button class="play-btn">PLAY NOW</button>
+            </a>
+            
+            <!-- Tongue Twister removed -->
+            
+            <a href="/storytelling" class="game-card">
+                <div class="game-icon">📖</div>
+                <h2>Storytelling Mode</h2>
+                <p>Listen to stories and answer questions</p>
+                <button class="play-btn">PLAY NOW</button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Display username and score from session
+        document.getElementById('username').textContent = "{{ session.get('username', 'Player') }}";
+        document.getElementById('userScore').textContent = "{{ user_score or 0 }}";
+        // allow username change by clicking name
+        document.getElementById('username').style.cursor = 'pointer';
+        document.getElementById('username').title = 'Click to change username';
+        document.getElementById('username').addEventListener('click', async ()=>{
+            const current = document.getElementById('username').textContent;
+            const v = prompt('Enter new username (letters, numbers, _ and - allowed):', current);
+            if(!v) return;
+            const username = v.trim();
+            try{
+                const res = await fetch('/api/change-username', {
+                    method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username})
+                });
+                const j = await res.json();
+                if(res.ok && j.success){
+                    document.getElementById('username').textContent = j.username;
+                    alert('Username updated');
+                } else {
+                    alert(j.message || 'Could not update username');
+                }
+            }catch(e){ alert('Network error'); }
+        });
+        // Notifications UI
+        const notifBtn = document.getElementById('notifBtn');
+        const notifDropdown = document.getElementById('notifDropdown');
+        const notifList = document.getElementById('notifList');
+        const notifCount = document.getElementById('notifCount');
+        const notifRefresh = document.getElementById('notifRefresh');
+
+        async function loadNotifications(){
+            try{
+                const res = await fetch('/api/notifications');
+                let data = await res.json();
+                if(!Array.isArray(data)) data = [];
+                notifList.innerHTML = '';
+                if(data.length === 0){
+                    notifList.innerHTML = '<div style="padding:12px;color:#666">No notifications.</div>';
+                    notifCount.style.display = 'none';
+                    return;
+                }
+
+                let unread = 0;
+                data.forEach(n => {
+                    if(!n) return;
+                    const item = document.createElement('div');
+                    item.dataset.id = n.id || '';
+                    item.style.padding = '10px';
+                    item.style.borderBottom = '1px solid #f1f1f1';
+                    item.style.fontSize = '14px';
+                    item.style.cursor = 'pointer';
+                    if(n.is_read === 0 || n.is_read === '0' || n.is_read === false){
+                        item.style.background = '#f7f9ff';
+                    } else {
+                        item.style.background = '#fff';
+                    }
+                    item.innerHTML = `<div style=\"font-weight:600;margin-bottom:6px\">${escapeHtml(n.message)}</div><div style=\"font-size:12px;color:#888\">${n.created_at || ''}</div>`;
+                    item.addEventListener('click', (e)=>{ e.stopPropagation(); markRead(n.id, item); });
+                    notifList.appendChild(item);
+                    if(n.is_read === 0 || n.is_read === '0' || n.is_read === false) unread++;
+                });
+
+                if(unread > 0){
+                    notifCount.textContent = unread;
+                    notifCount.style.display = 'inline-block';
+                } else {
+                    notifCount.style.display = 'none';
+                }
+            }catch(e){
+                notifList.innerHTML = '<div style="padding:12px;color:#c00">Could not load notifications</div>';
+                notifCount.style.display = 'none';
+            }
+        }
+
+        function escapeHtml(s){
+            if(!s) return '';
+            return String(s).replace(/[&<>\"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c];});
+        }
+
+        async function markAllRead(){
+            try{
+                await fetch('/api/notifications/mark-read', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({all: true})
+                });
+                notifCount.style.display = 'none';
+            }catch(e){ }
+        }
+
+        async function markRead(id, item){
+            try{
+                const res = await fetch('/api/notifications/mark-read', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({id: id})
+                });
+                const j = await res.json();
+                if(j && j.success){
+                    if(item){
+                        item.style.background = '#fff';
+                        item.style.opacity = '0.9';
+                    }
+                    // decrement badge if shown
+                    if(notifCount.style.display !== 'none'){
+                        let v = parseInt(notifCount.textContent||'0') - 1;
+                        if(v <= 0){ notifCount.style.display = 'none'; }
+                        else { notifCount.textContent = v; }
+                    }
+                }
+            }catch(e){ }
+        }
+
+        notifBtn.addEventListener('click', async (e)=>{
+            e.stopPropagation();
+            if(notifDropdown.style.display === 'none' || notifDropdown.style.display === ''){
+                notifDropdown.style.display = 'block';
+                await loadNotifications();
+                // mark all as read when opening dropdown
+                await markAllRead();
+            } else {
+                notifDropdown.style.display = 'none';
+            }
+        });
+
+        notifRefresh.addEventListener('click', (e)=>{ e.stopPropagation(); loadNotifications(); });
+
+        document.addEventListener('click', ()=>{ notifDropdown.style.display = 'none'; });
+
+        // Load notifications immediately on page load and poll every 30s
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNotifications();
+            setInterval(loadNotifications, 30000);
+        });
+    </script>
+</body>
+</html>

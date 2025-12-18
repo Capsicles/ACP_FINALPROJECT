@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Knowledge Check</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .card {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 32px;
+    }
+    #progress {
+      color: #667eea;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    #questionArea h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    button {
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: rgba(102, 126, 234, 0.5) !important;
+    }
+    .options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .option {
+      padding: 18px;
+      border: 2px solid rgba(102, 126, 234, 0.3);
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s;
+      text-align: left;
+    }
+    .option:hover:not(:disabled) {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    }
+    .option:disabled {
+      cursor: not-allowed;
+    }
+    .back-home-btn {
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      display: inline-block;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    .back-home-btn:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    .home-fab { position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); right: 22px; z-index: 1000; border-radius: 999px; padding: 12px 20px; }
+    .score-container {
+      text-align: center;
+      padding: 14px 12px;
+      background: #fff;
+      border-radius: 14px;
+      margin: 16px auto;
+      box-shadow: 0 1px 6px rgba(102, 126, 234, 0.13);
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .score-title {
+      font-size: 1.12em;
+      color: #667eea;
+      margin: 2px 0 2px;
+      font-weight: 600;
+    }
+    .score-display {
+      font-size: 2.1em;
+      font-weight: 700;
+      color: #4e54c8;
+      margin: 0;
+      padding: 6px 12px;
+      background: #f5f8ff;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      display: inline-block;
+      line-height: 1;
+    }
+    .score-fraction {
+      font-size: 0.92em;
+      color: #667eea;
+      margin: 0;
+      font-weight: 600;
+    }
+    .score-percentage {
+      font-size: 0.92em;
+      color: #667eea;
+      font-weight: 700;
+      margin: 0;
+    }
+    .score-message {
+      padding: 6px 10px;
+      background: #f5f8ff;
+      color: #667eea;
+      border-radius: 8px;
+      margin: 4px 0 2px;
+      font-weight: 600;
+      font-size: 12px;
+      border: 1px solid #e2e8f0;
+    }
+    .score-message.error {
+      background: #fff5f5;
+      color: #ff4757;
+      border-color: #fed7d7;
+    }
+    .leaderboard-link {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 18px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 13px;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    .leaderboard-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    @media (max-width: 480px) {
+      .score-container { max-width: 98vw; padding: 10px 12px; }
+      .score-title { font-size: 1em; }
+      .score-display { font-size: 1.6em; }
+    }
+    div[style*="display: flex"] > button,
+    div[style*="display: flex"] > a.back-home-btn {
+      margin: 0 !important;
+      display: inline-block !important;
+      width: auto !important;
+      text-align: center !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Knowledge Check</h1>
+    <p id="progress">Question 1</p>
+    <div id="questionArea"></div>
+    <div class="options" id="options"></div>
+    <div style="margin-top:15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <a href="/home" class="back-home-btn home-fab" onclick="try{stopAllAudio&&stopAllAudio();}catch(e){}">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    const questions = {{ questions | tojson }};
+    let idx = 0, score = 0;
+
+    function speak(text){
+      if(window.speechSynthesis){
+        const u = new SpeechSynthesisUtterance(text);
+        window.speechSynthesis.speak(u);
+      }
+    }
+
+    function stopAllAudio(){
+      if(window.speechSynthesis){ try{ window.speechSynthesis.cancel(); }catch(e){} }
+    }
+
+    async function saveScore(finalScore, totalQuestions) {
+      try {
+        const response = await fetch('/api/add-score', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            score: finalScore,
+            game: 'Knowledge Check'
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          console.log('Score saved:', data.message);
+          
+          // Update the score message
+          const messageDiv = document.getElementById('scoreMessage');
+          if (messageDiv) {
+            messageDiv.innerHTML = `✅ Score saved successfully!`;
+            messageDiv.className = 'score-message';
+          }
+          
+          // Update leaderboard link if rank is available
+          const leaderboardLink = document.getElementById('leaderboardLink');
+          if (leaderboardLink && data.rank) {
+            leaderboardLink.innerHTML = `View Leaderboard (Your Rank: #${data.rank}) →`;
+          }
+        } else {
+          const messageDiv = document.getElementById('scoreMessage');
+          if (messageDiv) {
+            messageDiv.innerHTML = `⚠️ Could not save score. Please try again.`;
+            messageDiv.className = 'score-message error';
+          }
+        }
+      } catch (error) {
+        console.error('Error saving score:', error);
+        const messageDiv = document.getElementById('scoreMessage');
+        if (messageDiv) {
+          messageDiv.innerHTML = `⚠️ Error saving score. Please try again.`;
+          messageDiv.className = 'score-message error';
+        }
+      }
+    }
+
+    function render(){
+      if(idx>=questions.length){
+        const finalScore = score;
+        const totalQuestions = questions.length;
+        const percentage = Math.round((finalScore / totalQuestions) * 100);
+        
+        // Hide progress
+        document.getElementById('progress').style.display = 'none';
+        
+        
+        document.getElementById('questionArea').innerHTML = `
+          <div class="score-container">
+            <div class="score-title">Quiz Complete! 🎉</div>
+            <div class="score-display">${finalScore}</div>
+            <div class="score-fraction">out of ${totalQuestions} questions</div>
+            <div class="score-percentage">${percentage}% Correct</div>
+            <div id="scoreMessage" class="score-message">Saving score...</div>
+            <a href="/leaderboard" id="leaderboardLink" class="leaderboard-link">View Leaderboard →</a>
+          </div>
+        `;
+        document.getElementById('options').innerHTML = '';
+        
+        // Save score to leaderboard
+        saveScore(finalScore, totalQuestions);
+        return;
+      }
+      const q = questions[idx];
+      document.getElementById('progress').style.display = 'block';
+      document.getElementById('progress').textContent = `Question ${idx+1} of ${questions.length}`;
+      document.getElementById('questionArea').innerHTML = `<h2>${q.question}</h2>`;
+      const opts = document.getElementById('options'); opts.innerHTML='';
+      q.options.forEach((o,i)=>{
+        const btn = document.createElement('button'); btn.className='option'; btn.innerText = String.fromCharCode(65+i)+'. '+o;
+        btn.onclick = ()=> select(i, btn);
+        opts.appendChild(btn);
+      });
+      // speak question and options
+      speak(q.question + '. Options: ' + q.options.map((o,i)=> (String.fromCharCode(65+i)+', '+o)).join('. '));
+    }
+
+    function select(i, btn){
+      stopAllAudio();
+      const q = questions[idx];
+      if(i===q.correct){ 
+        score++; 
+        btn.style.background='#2ed573';
+        btn.style.color='white';
+        btn.style.fontWeight='bold';
+      } else { 
+        btn.style.background='#ff4757';
+        btn.style.color='white';
+        btn.style.fontWeight='bold';
+        // Highlight correct answer
+        const correctBtn = document.querySelectorAll('.option')[q.correct];
+        if(correctBtn) {
+          correctBtn.style.background='#2ed573';
+          correctBtn.style.color='white';
+          correctBtn.style.fontWeight='bold';
+        }
+      }
+      // disable all options
+      document.querySelectorAll('.option').forEach(b=>b.disabled=true);
+      // Proceed to next question only because the user clicked an answer (no timers/auto events)
+      idx++;
+      render();
+    }
+
+
+    // Removed keyboard and voice auto-answer triggers to prevent unintended auto-skips
+
+    render();
+  </script>
+</body>
+</html>
+[]

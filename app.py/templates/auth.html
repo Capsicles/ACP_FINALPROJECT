@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In / Register - HearMeOut</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      min-height:100vh;
+      padding: 40px 18px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background:
+        radial-gradient(1000px 600px at 10% 10%, rgba(255,255,255,0.08), transparent 60%),
+        radial-gradient(900px 500px at 90% 20%, rgba(255,255,255,0.06), transparent 55%),
+        linear-gradient(135deg, #1f2348 0%, #2b2e6b 35%, #5b3ea1 70%, #a057e7 100%);
+      background-size: 200% 200%;
+      animation: bgShift 15s ease-in-out infinite;
+    }
+    @keyframes bgShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+    .container { max-width: 760px; margin: 0 auto; }
+    header { color:#fff; text-align:center; margin-bottom: 24px; }
+    header h1 {
+      font-size: 40px;
+      background: linear-gradient(90deg, #c4b5fd 0%, #ffffff 40%, #c4b5fd 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      text-shadow: 0 6px 26px rgba(0,0,0,.25);
+      letter-spacing: .5px;
+    }
+    header .muted { color:#e8eafc; opacity:.95; }
+
+    .tabs { display:flex; gap:10px; justify-content:center; margin-bottom:18px; flex-wrap:wrap; position: relative; }
+    .tab-btn {
+      background: rgba(255,255,255,.12);
+      color:#e6e8ff;
+      border:1px solid rgba(255,255,255,.28);
+      padding:10px 16px;
+      border-radius:999px;
+      font-weight:800; cursor:pointer;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 6px 14px rgba(0,0,0,.25);
+      backdrop-filter: blur(6px);
+      transition: all .18s ease;
+    }
+    .tab-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .tab-btn.active { background: linear-gradient(135deg, #6d6afc 0%, #b06afc 100%); color:#fff; border-color: transparent; box-shadow: 0 8px 24px rgba(109,106,252,.35); }
+
+    .grid { display:grid; grid-template-columns: 1fr; }
+    .card {
+      position: relative;
+      background: rgba(255,255,255,0.12);
+      border:1px solid rgba(255,255,255,0.28);
+      border-radius:18px; padding:22px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+    .card:before { content:''; position:absolute; inset:-2px; background: radial-gradient(500px 220px at -10% -20%, rgba(255,255,255,.25), transparent 55%); pointer-events:none; }
+
+    .row { display:flex; gap:10px; margin:12px 0; }
+    .col { flex:1; display:flex; flex-direction:column; gap:6px; }
+    label { color:#e8eafc; font-size:13px; font-weight:800; letter-spacing:.3px; text-transform: uppercase; opacity:.95; }
+    input {
+      border:1px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.15);
+      color:#fff;
+      border-radius:12px; padding:12px 14px; font-size:15px;
+      outline:none;
+      transition: all .18s ease;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+      width: min(100%, 340px);
+    }
+    input::placeholder { color: rgba(255,255,255,.75); }
+    input:focus { border-color:#c4b5fd; box-shadow: 0 0 0 3px rgba(196,181,253,.25), inset 0 0 0 1px rgba(255,255,255,.1); }
+
+    .btn {
+      background: linear-gradient(135deg, #7c3aed 0%, #22d3ee 100%);
+      color:#0b1025; border:0; padding:12px 16px; border-radius:12px;
+      font-weight:900; cursor:pointer;
+      box-shadow: 0 10px 24px rgba(124,58,237,.35), 0 4px 10px rgba(34,211,238,.25);
+      transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+    }
+    .btn:hover { transform: translateY(-1px) scale(1.01); filter: brightness(1.03); box-shadow: 0 14px 32px rgba(124,58,237,.45), 0 6px 16px rgba(34,211,238,.32); }
+    .btn:active { transform: translateY(0); }
+
+    .muted { color:#aeb6ff; font-size:13px; }
+    .msg { margin-top:10px; font-size:14px; }
+    .ok { color:#86efac; }
+    .err { color:#fb7185; }
+    .actions { display:flex; gap:10px; align-items:center; justify-content:space-between; margin-top:12px; flex-wrap:wrap; }
+    .link { color:#0b1025; text-decoration:none; font-weight:800; background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(255,255,255,.8)); padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.6); }
+
+    /* Login tab side-by-side layout */
+    .login-flex { display:flex; gap:14px; align-items:flex-start; }
+    .login-left { flex: 1 1 420px; }
+    .login-right { flex: 0 0 220px; display:flex; align-items:center; justify-content:center; }
+    .brand-block {
+      background: transparent;
+      border:0; border-radius:0; padding:0; width:100%;
+      box-shadow: none; text-align:center; color:#fff;
+    }
+    .brand-title { font-size:24px; font-weight:900; letter-spacing:.3px; margin:0 0 4px; }
+    .brand-title .pad { font-size:24px; margin-right:6px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.25)); }
+    .brand-subtitle { font-size:12px; opacity:.92; }
+    @media (max-width: 900px){ .login-flex{ flex-direction: column; } .login-right{ order:-1; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Account Access</h1>
+      <div class="muted" style="color:#fff;opacity:.95">Sign in, create an account, or log in as admin</div>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="login">User Login</button>
+      <button class="tab-btn" data-tab="register">Register</button>
+      <button class="tab-btn" data-tab="admin">Admin Login</button>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div id="tab-login" class="tab-panel">
+          <div class="login-flex">
+            <div class="login-left">
+              <div class="row">
+                <div class="col">
+                  <label for="login-username">Username</label>
+                  <input id="login-username" placeholder="Enter username" autocomplete="username" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <label for="login-password">Password</label>
+                  <input id="login-password" type="password" placeholder="Enter password" autocomplete="current-password" />
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn" id="login-btn">Sign In</button>
+              </div>
+              <div id="login-msg" class="msg"></div>
+            </div>
+            <div class="login-right">
+              <div class="brand-block">
+                <div class="brand-title"><span class="pad">🎮</span>HearMeOut</div>
+                <div class="brand-subtitle">Interactive Learning Game</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-register" class="tab-panel" style="display:none;">
+          <div class="row">
+            <div class="col">
+              <label for="reg-username">Username</label>
+              <input id="reg-username" placeholder="Choose a username" autocomplete="username" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label for="reg-password">Password</label>
+              <input id="reg-password" type="password" placeholder="Choose a password" autocomplete="new-password" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="reg-btn">Create Account</button>
+          </div>
+          <div id="reg-msg" class="msg"></div>
+        </div>
+
+        <div id="tab-admin" class="tab-panel" style="display:none;">
+          <div class="row">
+            <div class="col">
+              <label for="admin-username">Admin Username</label>
+              <input id="admin-username" placeholder="admin" autocomplete="username" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label for="admin-password">Admin Password</label>
+              <input id="admin-password" type="password" placeholder="Enter admin password" autocomplete="current-password" />
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn" id="admin-btn">Admin Sign In</button>
+          </div>
+          <div id="admin-msg" class="msg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Tabs
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    tabButtons.forEach(btn => btn.addEventListener('click', () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const id = btn.dataset.tab;
+      document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+      document.getElementById('tab-' + id).style.display = 'block';
+    }));
+
+    // User login
+    document.getElementById('login-btn').addEventListener('click', async () => {
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+      const msg = document.getElementById('login-msg');
+      msg.textContent = '';
+      if (!username || !password) { msg.textContent = 'Enter username and password.'; msg.className='msg err'; return; }
+      try {
+        const resp = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username, password })});
+        const j = await resp.json();
+        if(!resp.ok || !j.success){ msg.textContent = j.message || 'Login failed.'; msg.className='msg err'; return; }
+        msg.textContent = 'Success! Redirecting...'; msg.className='msg ok';
+        setTimeout(() => window.location.href='/home', 600);
+      } catch(e) { msg.textContent = 'Login error.'; msg.className='msg err'; }
+    });
+
+    // Register
+    document.getElementById('reg-btn').addEventListener('click', async () => {
+      const username = document.getElementById('reg-username').value.trim();
+      const password = document.getElementById('reg-password').value.trim();
+      const msg = document.getElementById('reg-msg');
+      msg.textContent = '';
+      if (!username || !password) { msg.textContent = 'Enter username and password.'; msg.className='msg err'; return; }
+      try {
+        const resp = await fetch('/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username, password })});
+        const j = await resp.json();
+        if(!resp.ok || !j.success){ msg.textContent = j.message || 'Registration failed.'; msg.className='msg err'; return; }
+        msg.textContent = 'Registered! You can sign in now.'; msg.className='msg ok';
+        // switch to login
+        document.querySelector('.tab-btn[data-tab="login"]').click();
+        document.getElementById('login-username').value = username;
+      } catch(e) { msg.textContent = 'Registration error.'; msg.className='msg err'; }
+    });
+
+    // Admin login
+    document.getElementById('admin-btn').addEventListener('click', async () => {
+      const username = document.getElementById('admin-username').value.trim();
+      const password = document.getElementById('admin-password').value.trim();
+      const msg = document.getElementById('admin-msg');
+      msg.textContent = '';
+      if (!username || !password) { msg.textContent = 'Enter admin username and password.'; msg.className='msg err'; return; }
+      try {
+        const resp = await fetch('/api/admin-login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username, password })});
+        const j = await resp.json();
+        if(!resp.ok || !j.success){ msg.textContent = j.message || 'Admin login failed.'; msg.className='msg err'; return; }
+        msg.textContent = 'Welcome, admin! Redirecting...'; msg.className='msg ok';
+        setTimeout(() => window.location.href='/admin', 600);
+      } catch(e) { msg.textContent = 'Admin login error.'; msg.className='msg err'; }
+    });
+  </script>
+</body>
+</html>

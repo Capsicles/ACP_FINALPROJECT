@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sound Identification</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .card {
+      max-width: 750px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 32px;
+    }
+    p {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      margin: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    #list > div {
+      padding: 15px;
+      margin: 15px 0;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 12px;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+    }
+    .back-home-btn {
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      display: inline-block;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    .back-home-btn:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    .home-fab { position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); right: 22px; z-index: 1000; border-radius: 999px; padding: 12px 20px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Sound Identification</h1>
+    <p>Listen to the sound and choose the correct label. Use voice or buttons.</p>
+    <div id="gameArea"></div>
+    <div style="margin-top:15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <a href="/home" class="back-home-btn home-fab" onclick="try{stopAllAudio&&stopAllAudio();}catch(e){}">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    const sounds = {{ sounds | tojson }};
+    let current = 0;
+    let score = 0;
+    let currentAudio = null;
+    function stopAllAudio(){ try{ if(currentAudio){ currentAudio.pause(); currentAudio.currentTime = 0; } }catch(e){} }
+    function renderQuestion() {
+      const area = document.getElementById('gameArea');
+      if (current >= sounds.length) {
+        area.innerHTML = `<div style='font-size:1.2em; font-weight:bold; margin-top:20px;'>Game Over!<br>Your score: ${score} / ${sounds.length}</div>`;
+        return;
+      }
+      const s = sounds[current];
+      const choices = s.choices.map((c, cidx) => `<button onclick="guess(${cidx})">${c}</button>`).join(' ');
+      area.innerHTML = `<div style="margin-bottom:12px"><button onclick="play()">Play</button> ${choices}</div>`;
+    }
+    function play() {
+      stopAllAudio();
+      currentAudio = new Audio(sounds[current].file);
+      currentAudio.play();
+    }
+    function guess(choiceIdx) {
+      stopAllAudio();
+      const s = sounds[current];
+      // Find the correct index in the shuffled choices
+      const correctLabel = s.label;
+      const correctIdx = s.choices.findIndex(c => c === correctLabel);
+      if (choiceIdx === correctIdx) {
+        score++;
+      }
+      current++;
+      setTimeout(renderQuestion, 400);
+    }
+    renderQuestion();
+  </script>
+</body>
+</html>
