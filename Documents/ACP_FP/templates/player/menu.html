@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Menu - HearMeOut</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .user-details h2 {
+            margin: 0;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        .user-details h2:hover {
+            text-decoration: underline;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .notif-btn {
+            position: relative;
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .notif-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .games-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .games-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+        }
+        
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+            color: #333;
+            width: 280px;
+            flex-shrink: 0;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .game-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .game-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .game-card h3 {
+            margin: 10px 0;
+            color: #667eea;
+        }
+        
+        .maintenance-badge {
+            background: #ffd166;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="user-info">
+                <div class="avatar">{{ session.username[0]|upper }}</div>
+                <div class="user-details">
+                    <h2 id="username" title="Click to edit">{{ session.username }}</h2>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">{{ stats.games_played }}</div>
+                            <div class="stat-label">Games Played</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ stats.total_score }}</div>
+                            <div class="stat-label">Total Score</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <a href="/player/scores" class="btn btn-primary">📊 My Scores</a>
+                <a href="/player/leaderboard" class="btn btn-primary">🏆 Leaderboard</a>
+                <a href="/player/report" class="btn btn-primary">📝 Report Issue</a>
+                <button class="btn notif-btn" id="notifBtn">
+                    🔔 Notifications
+                    {% if unread_notifications > 0 %}
+                    <span class="notif-badge">{{ unread_notifications }}</span>
+                    {% endif %}
+                </button>
+                <a href="/logout" class="btn btn-secondary">🚪 Logout</a>
+            </div>
+        </div>
+        
+        <h1 style="color: white; text-align: center; margin-bottom: 30px;">🎮 HearMeOut</h1>
+        
+        <div class="games-grid">
+            <!-- First row: 3 games -->
+            <div class="games-row">
+                {% for game in enabled_games[:3] %}
+                {% set game_names = {
+                    'knowledge_check': '🧠 Knowledge Check',
+                    'math_quick': '➗ Math Quick Solve', 
+                    'riddle': '❓ Riddle Challenge',
+                    'vocabulary': '📚 Vocabulary Trainer',
+                    'storytelling': '📖 Storytelling Mode'
+                } %}
+                <a href="/game/{{ game }}" class="game-card">
+                    <div class="game-icon">{{ game_names[game].split(' ')[0] }}</div>
+                    <h3>{{ game_names[game].split(' ')[1:]|join(' ') }}</h3>
+                    <p>Test your skills with voice commands</p>
+                </a>
+                {% endfor %}
+            </div>
+            
+            <!-- Second row: 2 games (centered) -->
+            <div class="games-row">
+                {% for game in enabled_games[3:5] %}
+                {% set game_names = {
+                    'knowledge_check': '🧠 Knowledge Check',
+                    'math_quick': '➗ Math Quick Solve', 
+                    'riddle': '❓ Riddle Challenge',
+                    'vocabulary': '📚 Vocabulary Trainer',
+                    'storytelling': '📖 Storytelling Mode'
+                } %}
+                <a href="/game/{{ game }}" class="game-card">
+                    <div class="game-icon">{{ game_names[game].split(' ')[0] }}</div>
+                    <h3>{{ game_names[game].split(' ')[1:]|join(' ') }}</h3>
+                    <p>Test your skills with voice commands</p>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notifications Modal -->
+    <div id="notifModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border-radius: 15px; padding: 20px; width: 400px; max-height: 500px; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>🔔 Notifications</h3>
+                <button onclick="document.getElementById('notifModal').style.display='none'" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+            </div>
+            <div id="notifList"></div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="markAllRead()" class="btn btn-primary">Mark All as Read</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Username editing
+        document.getElementById('username').addEventListener('click', function() {
+            const newUsername = prompt('Enter new username:', this.textContent);
+            if (newUsername && newUsername.length >= 3) {
+                fetch('/player/update-username', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: newUsername})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        this.textContent = data.username;
+                        alert('Username updated successfully!');
+                    } else {
+                        alert(data.message || 'Error updating username');
+                    }
+                });
+            }
+        });
+        
+        // Notifications
+        document.getElementById('notifBtn').addEventListener('click', function() {
+            loadNotifications();
+            document.getElementById('notifModal').style.display = 'block';
+        });
+        
+        function loadNotifications() {
+            fetch('/player/notifications')
+                .then(res => res.json())
+                .then(notifications => {
+                    const list = document.getElementById('notifList');
+                    if (notifications.length === 0) {
+                        list.innerHTML = '<p style="text-align: center; color: #666;">No notifications</p>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    notifications.forEach(notif => {
+                        const time = new Date(notif.created_at).toLocaleString();
+                        const readClass = notif.is_read ? '' : 'unread';
+                        html += `
+                            <div style="padding: 10px; border-bottom: 1px solid #eee; ${notif.is_read ? '' : 'background: #f7f9ff;'}">
+                                <div style="font-weight: ${notif.is_read ? 'normal' : 'bold'}">${notif.message}</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                                    ${time} • ${notif.category}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    list.innerHTML = html;
+                });
+        }
+        
+        function markAllRead() {
+            fetch('/player/notifications/mark-read', {method: 'POST'})
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        loadNotifications();
+                        document.querySelector('.notif-badge')?.remove();
+                    }
+                });
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('notifModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

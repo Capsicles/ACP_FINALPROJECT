@@ -1,0 +1,362 @@
+{
+  "knowledge_check": [
+    {
+      "question": "What is the capital city of Australia?",
+      "options": ["Sydney", "Melbourne", "Canberra", "Perth"],
+      "answer": 2
+    },
+    {
+      "question": "Which planet is known as the Red Planet?",
+      "options": ["Venus", "Mars", "Jupiter", "Saturn"],
+      "answer": 1
+    },
+    {
+      "question": "What is the largest mammal in the world?",
+      "options": ["African Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
+      "answer": 1
+    },
+    {
+      "question": "Which element has the chemical symbol 'O'?",
+      "options": ["Gold", "Oxygen", "Osmium", "Oganesson"],
+      "answer": 1
+    },
+    {
+      "question": "Who wrote the play 'Romeo and Juliet'?",
+      "options": ["Charles Dickens", "William Shakespeare", "Jane Austen", "Mark Twain"],
+      "answer": 1
+    },
+    {
+      "question": "What is the smallest country in the world?",
+      "options": ["Monaco", "Vatican City", "San Marino", "Liechtenstein"],
+      "answer": 1
+    },
+    {
+      "question": "Which organ in the human body produces insulin?",
+      "options": ["Liver", "Pancreas", "Kidney", "Stomach"],
+      "answer": 1
+    },
+    {
+      "question": "What is the hardest natural substance on Earth?",
+      "options": ["Gold", "Iron", "Diamond", "Platinum"],
+      "answer": 2
+    },
+    {
+      "question": "Which country is known as the Land of the Rising Sun?",
+      "options": ["China", "South Korea", "Japan", "Thailand"],
+      "answer": 2
+    },
+    {
+      "question": "What is the main ingredient in guacamole?",
+      "options": ["Tomato", "Avocado", "Pepper", "Onion"],
+      "answer": 1
+    }
+  ],
+  "math_quick": [
+    {
+      "question": "What is 15 + 27?",
+      "options": ["32", "42", "52", "62"],
+      "answer": 1
+    },
+    {
+      "question": "What is 48 - 19?",
+      "options": ["27", "29", "31", "33"],
+      "answer": 1
+    },
+    {
+      "question": "What is 6 × 8?",
+      "options": ["42", "48", "54", "56"],
+      "answer": 1
+    },
+    {
+      "question": "What is 72 ÷ 9?",
+      "options": ["6", "7", "8", "9"],
+      "answer": 2
+    },
+    {
+      "question": "What is 25% of 80?",
+      "options": ["15", "20", "25", "30"],
+      "answer": 1
+    },
+    {
+      "question": "What is 3² + 4²?",
+      "options": ["12", "16", "20", "25"],
+      "answer": 3
+    },
+    {
+      "question": "What is 7 × 9 - 13?",
+      "options": ["44", "50", "56", "60"],
+      "answer": 1
+    },
+    {
+      "question": "What is 144 ÷ 12?",
+      "options": ["10", "11", "12", "13"],
+      "answer": 2
+    },
+    {
+      "question": "What is 18 + 35 - 7?",
+      "options": ["44", "46", "48", "50"],
+      "answer": 1
+    },
+    {
+      "question": "What is 5 × (6 + 4)?",
+      "options": ["30", "40", "50", "60"],
+      "answer": 2
+    }
+  ],
+  "riddle": [
+    {
+      "question": "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
+      "options": ["An echo", "A shadow", "A thought", "A dream"],
+      "answer": 0
+    },
+    {
+      "question": "The more you take, the more you leave behind. What am I?",
+      "options": ["Footsteps", "Breath", "Money", "Time"],
+      "answer": 0
+    },
+    {
+      "question": "What has keys but can't open locks?",
+      "options": ["A map", "A piano", "A secret", "A computer"],
+      "answer": 1
+    },
+    {
+      "question": "I'm not alive, but I can grow; I don't have lungs, but I need air; I don't have a mouth, but water kills me. What am I?",
+      "options": ["Fire", "A plant", "A cloud", "A stone"],
+      "answer": 0
+    },
+    {
+      "question": "What has a head, a tail, is brown, and has no legs?",
+      "options": ["A snake", "A penny", "A worm", "A stick"],
+      "answer": 1
+    },
+    {
+      "question": "What can travel around the world while staying in a corner?",
+      "options": ["A stamp", "A thought", "Light", "Sound"],
+      "answer": 0
+    },
+    {
+      "question": "What has an eye but cannot see?",
+      "options": ["A needle", "A potato", "A hurricane", "A blind person"],
+      "answer": 0
+    },
+    {
+      "question": "I'm light as a feather, but the strongest person can't hold me for more than 5 minutes. What am I?",
+      "options": ["Breath", "A secret", "A thought", "A bubble"],
+      "answer": 0
+    },
+    {
+      "question": "What has a neck but no head?",
+      "options": ["A bottle", "A shirt", "A river", "A guitar"],
+      "answer": 0
+    },
+    {
+      "question": "What gets wet while drying?",
+      "options": ["A towel", "Hair", "Clothes", "The sun"],
+      "answer": 0
+    }
+  ],
+  "vocabulary": [
+    {
+      "question": "What does 'benevolent' mean?",
+      "options": ["Well-meaning and kindly", "Beautiful and attractive", "Large and impressive", "Strict and harsh"],
+      "answer": 0
+    },
+    {
+      "question": "What is the meaning of 'ephemeral'?",
+      "options": ["Lasting for a very short time", "Extremely happy", "Very expensive", "Difficult to understand"],
+      "answer": 0
+    },
+    {
+      "question": "What does 'meticulous' mean?",
+      "options": ["Showing great attention to detail", "Very strong and powerful", "Extremely intelligent", "Quiet and shy"],
+      "answer": 0
+    },
+    {
+      "question": "What is the definition of 'ubiquitous'?",
+      "options": ["Present, appearing, or found everywhere", "Extremely rare and valuable", "Very complicated", "Beautiful and delicate"],
+      "answer": 0
+    },
+    {
+      "question": "What does 'ambiguous' mean?",
+      "options": ["Open to more than one interpretation", "Very clear and obvious", "Extremely difficult", "Completely certain"],
+      "answer": 0
+    },
+    {
+      "question": "What is the meaning of 'resilient'?",
+      "options": ["Able to withstand or recover quickly from difficult conditions", "Very fragile and breakable", "Extremely wealthy", "Highly educated"],
+      "answer": 0
+    },
+    {
+      "question": "What does 'alleviate' mean?",
+      "options": ["Make suffering or a problem less severe", "Make something worse", "Completely eliminate", "Ignore or overlook"],
+      "answer": 0
+    },
+    {
+      "question": "What is the definition of 'conundrum'?",
+      "options": ["A confusing and difficult problem or question", "A simple solution", "A type of animal", "A musical instrument"],
+      "answer": 0
+    },
+    {
+      "question": "What does 'diligent' mean?",
+      "options": ["Having or showing care and conscientiousness in one's work", "Lazy and unmotivated", "Very creative", "Extremely fast"],
+      "answer": 0
+    },
+    {
+      "question": "What is the meaning of 'pragmatic'?",
+      "options": ["Dealing with things sensibly and realistically", "Dealing with abstract ideas", "Being overly emotional", "Following strict rules"],
+      "answer": 0
+    }
+  ],
+  "storytelling": [
+    {
+      "story": "Once upon a time, in a small village nestled between rolling hills, there lived a young girl named Lily who loved to explore. Every day after finishing her chores, she would venture into the nearby forest, discovering hidden paths and observing the wildlife. One sunny afternoon, while following a trail of colorful butterflies, Lily stumbled upon an ancient map hidden under a large oak tree. The map was old and fragile, with mysterious symbols marking a path to what appeared to be a hidden treasure. Excited by her discovery, Lily decided to follow the map and embark on an adventure that would change her life forever.",
+      "questions": [
+        {
+          "question": "What was the name of the young girl in the story?",
+          "options": ["Lucy", "Lily", "Laura", "Lena"],
+          "answer": 1
+        },
+        {
+          "question": "Where did Lily find the ancient map?",
+          "options": ["In a cave", "Under an oak tree", "By the river", "In her backyard"],
+          "answer": 1
+        },
+        {
+          "question": "What led Lily to discover the map?",
+          "options": ["A talking bird", "Colorful butterflies", "A dream", "An old book"],
+          "answer": 1
+        },
+        {
+          "question": "What did the map contain?",
+          "options": ["Secret recipes", "Mysterious symbols", "Family history", "Weather patterns"],
+          "answer": 1
+        },
+        {
+          "question": "What did Lily do after finding the map?",
+          "options": ["She forgot about it", "She showed it to her friends", "She followed the map on an adventure", "She sold it at the market"],
+          "answer": 2
+        }
+      ]
+    },
+    {
+      "story": "In the bustling city of Metropolis, a young inventor named Alex worked tirelessly in his basement workshop. He was determined to create a device that could clean the city's polluted air. After months of failures and countless experiments, Alex finally discovered a unique combination of plants and technology that could filter even the smallest particles. His invention, which he called the 'Air Purifier 3000', was small enough to fit in a backpack but powerful enough to clean the air for an entire city block. When he demonstrated his invention to the city council, they were amazed and immediately approved funding to install his devices throughout the city.",
+      "questions": [
+        {
+          "question": "What was the inventor's name?",
+          "options": ["Alex", "Max", "Leo", "Sam"],
+          "answer": 0
+        },
+        {
+          "question": "What was he trying to invent?",
+          "options": ["A new car", "An air cleaning device", "A flying machine", "A time machine"],
+          "answer": 1
+        },
+        {
+          "question": "Where did he work on his invention?",
+          "options": ["In a university lab", "In his basement workshop", "In a government facility", "In a public park"],
+          "answer": 1
+        },
+        {
+          "question": "What was his invention called?",
+          "options": ["Clean Air Pro", "Air Purifier 3000", "Pollution Eliminator", "Fresh Air Machine"],
+          "answer": 1
+        },
+        {
+          "question": "Who approved funding for his invention?",
+          "options": ["His parents", "The city council", "A private company", "The mayor alone"],
+          "answer": 1
+        }
+      ]
+    },
+    {
+      "story": "On a remote island in the Pacific Ocean, a team of archaeologists discovered ruins unlike anything they had ever seen. The structures were made of a mysterious glowing stone that emitted a soft blue light at night. As they explored further, they found ancient writings that told of a civilization that had mastered renewable energy thousands of years ago. The leader of the expedition, Dr. Maria Rodriguez, realized that this discovery could change the world's understanding of ancient technology and potentially provide solutions to modern energy problems.",
+      "questions": [
+        {
+          "question": "Where was the discovery made?",
+          "options": ["In a desert", "On a remote island", "In a mountain range", "In a deep cave"],
+          "answer": 1
+        },
+        {
+          "question": "What was special about the structures?",
+          "options": ["They were underwater", "They were made of glowing stone", "They were floating in air", "They were invisible during the day"],
+          "answer": 1
+        },
+        {
+          "question": "What color light did the stones emit?",
+          "options": ["Red", "Green", "Blue", "Yellow"],
+          "answer": 2
+        },
+        {
+          "question": "What had the ancient civilization mastered?",
+          "options": ["Space travel", "Renewable energy", "Time manipulation", "Teleportation"],
+          "answer": 1
+        },
+        {
+          "question": "Who was the leader of the expedition?",
+          "options": ["Dr. James Wilson", "Dr. Maria Rodriguez", "Professor Chen", "Dr. Ahmed Khan"],
+          "answer": 1
+        }
+      ]
+    },
+    {
+      "story": "In a quiet library on a rainy afternoon, a curious teenager named Jamie found a book that seemed to be glowing on the shelf. When Jamie opened it, the words began to rearrange themselves on the pages, forming a message: 'Only those who seek knowledge shall find the hidden door.' Intrigued, Jamie followed the clues in the book, which led to a secret room behind one of the bookshelves. Inside, Jamie discovered a collection of books that contained all the knowledge of the universe, but with a warning that this knowledge must be used wisely.",
+      "questions": [
+        {
+          "question": "Where did the story take place?",
+          "options": ["A school", "A library", "A museum", "A bookstore"],
+          "answer": 1
+        },
+        {
+          "question": "What was special about the book Jamie found?",
+          "options": ["It was glowing", "It was talking", "It was flying", "It was invisible"],
+          "answer": 0
+        },
+        {
+          "question": "What did the message in the book say?",
+          "options": ["Find the golden key", "Only those who seek knowledge shall find the hidden door", "The answer lies within", "Trust your instincts"],
+          "answer": 1
+        },
+        {
+          "question": "Where was the secret room?",
+          "options": ["In the basement", "Behind a bookshelf", "In the attic", "Under the floor"],
+          "answer": 1
+        },
+        {
+          "question": "What was in the secret room?",
+          "options": ["Gold and treasure", "A time machine", "Books with all knowledge", "A magical portal"],
+          "answer": 2
+        }
+      ]
+    },
+    {
+      "story": "A small robot named Bolt lived in a futuristic city where humans and robots worked together in harmony. Bolt's job was to deliver packages, but he dreamed of becoming a musician. Every night after work, he would practice playing the piano in an abandoned concert hall. One day, the city announced a music competition open to both humans and robots. Bolt entered the competition and surprised everyone with his beautiful performance, proving that robots could have artistic souls too.",
+      "questions": [
+        {
+          "question": "What was the robot's name?",
+          "options": ["Spark", "Bolt", "Zap", "Charge"],
+          "answer": 1
+        },
+        {
+          "question": "What was Bolt's job?",
+          "options": ["Cleaning streets", "Delivering packages", "Guarding buildings", "Cooking food"],
+          "answer": 1
+        },
+        {
+          "question": "What was Bolt's dream?",
+          "options": ["To become a musician", "To travel to space", "To become mayor", "To build more robots"],
+          "answer": 0
+        },
+        {
+          "question": "Where did Bolt practice?",
+          "options": ["In a park", "In an abandoned concert hall", "In his apartment", "In a music store"],
+          "answer": 1
+        },
+        {
+          "question": "What competition did Bolt enter?",
+          "options": ["A dance competition", "A music competition", "A cooking competition", "A sports competition"],
+          "answer": 1
+        }
+      ]
+    }
+  ]
+}

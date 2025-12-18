@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Players - HearMeOut Admin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        
+        input[type="text"], select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .players-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-archived {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .action-btn.deactivate {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .action-btn.view {
+            background: #667eea;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .pagination-btn {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .pagination-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .flash.success {
+            background: #51cf66;
+            color: white;
+        }
+        
+        .flash.error {
+            background: #ff6b6b;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 Manage Players</h1>
+            <div class="controls">
+                <form method="GET" action="/admin/players" class="search-box">
+                    <input type="text" name="search" placeholder="Search players..." value="{{ search }}">
+                    <select name="status">
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                        <option value="archived" {% if status_filter == 'archived' %}selected{% endif %}>Archived</option>
+                        <option value="">All</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+                <a href="/admin/dashboard" class="btn btn-primary">← Dashboard</a>
+                <a href="/admin/archived" class="btn btn-secondary">📁 Archived</a>
+            </div>
+        </div>
+        
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <div class="players-container">
+            {% if players %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Registered</th>
+                        <th>Last Login</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in players %}
+                    <tr>
+                        <td>
+                            <div class="player-info">
+                                <div class="player-avatar">{{ player.username[0]|upper }}</div>
+                                <div>
+                                    <div style="font-weight: bold;">{{ player.username }}</div>
+                                    <div style="font-size: 12px; color: #666;">ID: {{ player.id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ player.email }}</td>
+                        <td>
+                            <span class="status-badge {% if player.status == 'active' %}status-active{% else %}status-archived{% endif %}">
+                                {{ player.status|upper }}
+                            </span>
+                        </td>
+                        <td style="color: #666; font-size: 14px;">{{ player.created_at }}</td>
+                        <td style="color: #666; font-size: 14px;">{{ player.last_login or 'Never' }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                {% if player.status == 'active' %}
+                                <form method="POST" action="/admin/player/{{ player.id }}/deactivate" 
+                                      onsubmit="return confirmDeactivate('{{ player.username }}')" style="display: inline;">
+                                    <button type="submit" class="action-btn deactivate">Deactivate</button>
+                                </form>
+                                {% else %}
+                                <form method="POST" action="/admin/player/{{ player.id }}/reactivate" 
+                                      onsubmit="return confirmReactivate('{{ player.username }}')" style="display: inline;">
+                                    <button type="submit" class="action-btn" style="background: #51cf66; color: white;">Reactivate</button>
+                                </form>
+                                {% endif %}
+                                <button class="action-btn view">View Stats</button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="icon">👥</div>
+                <h3>No Players Found</h3>
+                <p>Try adjusting your search criteria</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        function confirmDeactivate(username) {
+            return confirm(`⚠️ Are you sure you want to deactivate "${username}"?\n\nThis player will be moved to the archive.`);
+        }
+        
+        function confirmReactivate(username) {
+            return confirm(`✅ Are you sure you want to reactivate "${username}"?\n\nThe player will be able to log in again.`);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Your Concern - HearMeOut</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .back-btn:hover {
+            background: rgba(102,126,234,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            font-size: 16px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* POPUP */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .popup {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 300px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .popup h2 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+
+        .popup button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="report-card">
+
+        <a href="/player/menu" class="back-btn">← Back to Menu</a>
+
+        <h1>Report Your Concern</h1>
+        <p class="subtitle">Send your concern or feedback directly to the admin</p>
+
+        <form id="reportForm">
+            <textarea id="message" placeholder="Type your concern here..." required></textarea>
+            <button type="submit" class="submit-btn">Submit Concern</button>
+        </form>
+
+    </div>
+</div>
+
+<!-- SUCCESS POPUP -->
+<div class="popup-overlay" id="successPopup">
+    <div class="popup">
+        <h2>✔ Success</h2>
+        <p>Submitted to admin successfully</p>
+        <button onclick="closePopup()">OK</button>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById("reportForm");
+    const popup = document.getElementById("successPopup");
+
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const message = document.getElementById("message").value.trim();
+        if (!message) return;
+
+        fetch("/player/report", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: message })
+        });
+
+        popup.style.display = "flex";
+        form.reset();
+    });
+
+    function closePopup() {
+        popup.style.display = "none";
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Scores - HearMeOut</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin: 0;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card .value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .stat-card .label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .scores-table {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scores-table h2 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .medal {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        
+        .no-scores {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .no-scores .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 My Scores</h1>
+            <div style="display: flex; gap: 10px;">
+                <a href="/player/menu" class="btn btn-primary">← Back to Games</a>
+                <a href="/player/leaderboard" class="btn btn-primary">🏆 View Leaderboard</a>
+            </div>
+        </div>
+        
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="icon">🎮</div>
+                <div class="value">{{ stats.games_played }}</div>
+                <div class="label">Games Played</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="icon">🏆</div>
+                <div class="value">{{ stats.total_score }}</div>
+                <div class="label">Total Score</div>
+            </div>
+        </div>
+        
+        <div class="scores-table">
+            <h2>Game Breakdown</h2>
+            
+            {% if stats.game_scores %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Game</th>
+                        <th>Best Score</th>
+                        <th>Last Played</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for game in stats.game_scores %}
+                    {% set game_names = {
+                        'knowledge_check': '🧠 Knowledge Check',
+                        'math_quick': '➗ Math Quick Solve',
+                        'riddle': '❓ Riddle Challenge',
+                        'vocabulary': '📚 Vocabulary Trainer',
+                        'storytelling': '📖 Storytelling Mode'
+                    } %}
+                    <tr>
+                        <td>
+                            <span class="medal">{{ game_names[game.game].split(' ')[0] }}</span>
+                            {{ game_names[game.game].split(' ')[1:]|join(' ') }}
+                        </td>
+                        <td><strong>{{ game.best_score }}</strong></td>
+                        <td>{{ game.last_played }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="no-scores">
+                <div class="icon">📊</div>
+                <h3>No Scores Yet</h3>
+                <p>Play some games to see your scores here!</p>
+                <a href="/player/menu" class="btn btn-primary" style="margin-top: 20px;">🎮 Start Playing</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

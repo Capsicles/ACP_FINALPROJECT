@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - HearMeOut</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            background: white;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .leaderboard-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filter-info {
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .my-rank {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #667eea;
+        }
+        
+        .my-rank .rank-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .medals {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .medal {
+            font-size: 24px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .rank-cell {
+            text-align: center;
+            font-weight: bold;
+            width: 60px;
+        }
+        
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+        
+        .player-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .current-player {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+        }
+        
+        .score-cell {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span class="medal">🏆</span> Leaderboard</h1>
+            
+            <div class="controls">
+                <select id="gameFilter">
+                    <option value="">All Games</option>
+                    <option value="knowledge_check" {% if game == 'knowledge_check' %}selected{% endif %}>Knowledge Check</option>
+                    <option value="math_quick" {% if game == 'math_quick' %}selected{% endif %}>Math Quick Solve</option>
+                    <option value="riddle" {% if game == 'riddle' %}selected{% endif %}>Riddle Challenge</option>
+                    <option value="vocabulary" {% if game == 'vocabulary' %}selected{% endif %}>Vocabulary Trainer</option>
+                    <option value="storytelling" {% if game == 'storytelling' %}selected{% endif %}>Storytelling Mode</option>
+                </select>
+                
+                <a href="/player/menu" class="btn btn-primary">← Back to Games</a>
+            </div>
+        </div>
+        
+        <div class="leaderboard-container">
+            <div class="filter-info">
+                {% if game %}
+                    Showing rankings for: <strong>{{ game.replace('_', ' ').title() }}</strong>
+                {% else %}
+                    Showing overall rankings across all games
+                {% endif %}
+            </div>
+            
+            {% if user_rank %}
+            <div class="my-rank">
+                <div>
+                    <div style="font-size: 14px; color: #666;">Your Rank</div>
+                    <div class="rank-number">
+                        {% if user_rank == 1 %}🥇
+                        {% elif user_rank == 2 %}🥈
+                        {% elif user_rank == 3 %}🥉
+                        {% endif %}
+                        {{ user_rank }}
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 14px; color: #666;">Player</div>
+                    <div style="font-weight: bold; color: #333;">{{ session.username }}</div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if leaderboard %}
+            <table>
+                <thead>
+                    <tr>
+                        <th class="rank-cell">Rank</th>
+                        <th>Player</th>
+                        <th>Score</th>
+                        <th>Last Played</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in leaderboard %}
+                    {% set is_current = player.username == session.username %}
+                    <tr {% if is_current %}class="current-player"{% endif %}>
+                        <td class="rank-cell {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% endif %}">
+                            {% if loop.index == 1 %}🥇
+                            {% elif loop.index == 2 %}🥈
+                            {% elif loop.index == 3 %}🥉
+                            {% endif %}
+                            {{ loop.index }}
+                        </td>
+                        <td>
+                            <div class="player-cell">
+                                <div class="player-avatar">{{ player.username[0]|upper }}</div>
+                                <div>
+                                    <div style="font-weight: bold;">{{ player.username }}</div>
+                                    {% if is_current %}
+                                    <div style="font-size: 12px; color: #667eea;">(You)</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="score-cell">{{ player.total_score }}</td>
+                        <td style="color: #666; font-size: 14px;">{{ player.last_played }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="icon">📊</div>
+                <h3>No Rankings Yet</h3>
+                <p>Play some games to appear on the leaderboard!</p>
+                <a href="/player/menu" class="btn btn-primary" style="margin-top: 20px;">🎮 Start Playing</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('gameFilter').addEventListener('change', function() {
+            const game = this.value;
+            const url = game ? `/player/leaderboard?game=${game}` : '/player/leaderboard';
+            window.location.href = url;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - HearMeOut Admin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .notifications-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .send-notification, .notification-history {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: #667eea;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .notification-item.unread {
+            background: #f7f9ff;
+            font-weight: bold;
+        }
+        
+        .notification-item.read {
+            opacity: 0.8;
+        }
+        
+        .notification-message {
+            margin-bottom: 5px;
+        }
+        
+        .notification-meta {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .notification-category {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        
+        .category-announcement { background: #d4edda; color: #155724; }
+        .category-warning { background: #fff3cd; color: #856404; }
+        .category-maintenance { background: #cce5ff; color: #004085; }
+        .category-reward { background: #f8d7da; color: #721c24; }
+        .category-report { background: #e2e3e5; color: #383d41; }
+        
+        .empty-history {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .empty-history .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .flash.success {
+            background: #51cf66;
+            color: white;
+        }
+        
+        .flash.error {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .unread-count {
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔔 Admin Notifications
+                {% set unread_count = notifications|selectattr('is_read', 'equalto', 0)|list|length %}
+                {% if unread_count > 0 %}
+                <span class="unread-count">{{ unread_count }}</span>
+                {% endif %}
+            </h1>
+            <div class="btn-group">
+                <button onclick="markAllAsRead()" class="btn btn-secondary" id="markAllBtn">✓ Mark All as Read</button>
+                <a href="/admin/dashboard" class="btn btn-primary">← Dashboard</a>
+            </div>
+        </div>
+        
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <div class="notifications-container">
+            <div class="send-notification">
+                <h2 class="section-title">📤 Send Notification</h2>
+                <form method="POST" action="/admin/notifications">
+                    <div class="form-group">
+                        <label for="target">Send To:</label>
+                        <select id="target" name="target" onchange="togglePlayerSelect()">
+                            <option value="all">All Active Players</option>
+                            <option value="specific">Specific Player</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="playerSelectGroup" style="display: none;">
+                        <label for="user_id">Select Player:</label>
+                        <select id="user_id" name="user_id">
+                            <option value="">Select a player...</option>
+                            {% for player in players %}
+                            <option value="{{ player.id }}">{{ player.username }} ({{ player.email }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Category:</label>
+                        <select id="category" name="category">
+                            <option value="announcement">📢 Announcement</option>
+                            <option value="warning">⚠️ Warning</option>
+                            <option value="maintenance">🔧 Maintenance</option>
+                            <option value="reward">🎁 Reward</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message:</label>
+                        <textarea id="message" name="message" placeholder="Enter your notification message..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Send Notification</button>
+                </form>
+            </div>
+            
+            <div class="notification-history">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 class="section-title">📜 Notification History</h2>
+                    <span style="font-size: 12px; color: #666;">
+                        {% set unread_count = notifications|selectattr('is_read', 'equalto', 0)|list|length %}
+                        {{ unread_count }} unread
+                    </span>
+                </div>
+                
+                {% if notifications %}
+                <div style="max-height: 500px; overflow-y: auto;" id="notificationsList">
+                    {% for notification in notifications %}
+                    <div class="notification-item {% if notification.is_read == 0 %}unread{% else %}read{% endif %}" 
+                         data-id="{{ notification.id }}"
+                         onclick="markAsRead('{{ notification.id }}', this)">
+                        <div class="notification-message">
+                            <span class="notification-category category-{{ notification.category }}">
+                                {% if notification.category == 'announcement' %}📢
+                                {% elif notification.category == 'warning' %}⚠️
+                                {% elif notification.category == 'maintenance' %}🔧
+                                {% elif notification.category == 'reward' %}🎁
+                                {% elif notification.category == 'report' %}📝
+                                {% endif %}
+                                {{ notification.category|title }}
+                            </span>
+                            {{ notification.message }}
+                        </div>
+                        <div class="notification-meta">
+                            <span>
+                                {% if notification.username %}
+                                To: {{ notification.username }} ({{ notification.email }})
+                                {% else %}
+                                To: All Players
+                                {% endif %}
+                            </span>
+                            <span>{{ notification.created_at }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-history">
+                    <div class="icon">📜</div>
+                    <h3>No Notifications Yet</h3>
+                    <p>Send your first notification to players</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function togglePlayerSelect() {
+            const target = document.getElementById('target').value;
+            const playerSelectGroup = document.getElementById('playerSelectGroup');
+            
+            if (target === 'specific') {
+                playerSelectGroup.style.display = 'block';
+            } else {
+                playerSelectGroup.style.display = 'none';
+            }
+        }
+        
+        async function markAsRead(notificationId, element) {
+            // If already read, do nothing
+            if (element.classList.contains('read')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/admin/notifications/${notificationId}/mark-read`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    // Update UI
+                    element.classList.remove('unread');
+                    element.classList.add('read');
+                    element.style.fontWeight = 'normal';
+                    
+                    // Update unread count
+                    updateUnreadCount();
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+        
+        async function markAllAsRead() {
+            const btn = document.getElementById('markAllBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Processing...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/admin/notifications/mark-all-read', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    // Update all notifications to read state
+                    const notifications = document.querySelectorAll('.notification-item.unread');
+                    notifications.forEach(notification => {
+                        notification.classList.remove('unread');
+                        notification.classList.add('read');
+                        notification.style.fontWeight = 'normal';
+                    });
+                    
+                    // Update unread count
+                    updateUnreadCount();
+                    
+                    // Show success message
+                    alert('All notifications marked as read!');
+                }
+            } catch (error) {
+                console.error('Error marking all as read:', error);
+                alert('Error marking notifications as read');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        function updateUnreadCount() {
+            // Update header count
+            const unreadNotifications = document.querySelectorAll('.notification-item.unread').length;
+            const unreadCountElement = document.querySelector('.unread-count');
+            const sidebarCount = document.querySelector('.notification-history span:last-child');
+            
+            if (unreadNotifications > 0) {
+                if (unreadCountElement) {
+                    unreadCountElement.textContent = unreadNotifications;
+                } else {
+                    // Create unread count if it doesn't exist
+                    const headerTitle = document.querySelector('.header h1');
+                    const countSpan = document.createElement('span');
+                    countSpan.className = 'unread-count';
+                    countSpan.textContent = unreadNotifications;
+                    headerTitle.appendChild(countSpan);
+                }
+                
+                if (sidebarCount) {
+                    sidebarCount.textContent = `${unreadNotifications} unread`;
+                }
+            } else {
+                // Remove unread count if no unread notifications
+                if (unreadCountElement) {
+                    unreadCountElement.remove();
+                }
+                
+                if (sidebarCount) {
+                    sidebarCount.textContent = '0 unread';
+                }
+                
+                // Disable mark all button if no unread
+                document.getElementById('markAllBtn').disabled = true;
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            togglePlayerSelect();
+            updateUnreadCount();
+            
+            // Check if there are any unread notifications
+            const hasUnread = document.querySelectorAll('.notification-item.unread').length > 0;
+            document.getElementById('markAllBtn').disabled = !hasUnread;
+        });
+    </script>
+</body>
+</html>

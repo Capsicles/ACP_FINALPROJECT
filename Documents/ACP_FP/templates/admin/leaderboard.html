@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboards - HearMeOut Admin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            background: white;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .leaderboard-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .filter-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .reset-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .reset-form select {
+            min-width: 150px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .rank-cell {
+            text-align: center;
+            font-weight: bold;
+            width: 60px;
+        }
+        
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+        
+        .player-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .score-cell {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .flash.success {
+            background: #51cf66;
+            color: white;
+        }
+        
+        .flash.error {
+            background: #ff6b6b;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Admin Leaderboards</h1>
+            <div class="controls">
+                <a href="/admin/dashboard" class="btn btn-primary">← Dashboard</a>
+            </div>
+        </div>
+        
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <div class="leaderboard-container">
+            <div class="filter-info">
+                <div>
+                    <strong>Filter by Game:</strong>
+                    <select id="gameFilter" onchange="filterByGame()">
+                        <option value="">All Games</option>
+                        <option value="knowledge_check" {% if game == 'knowledge_check' %}selected{% endif %}>Knowledge Check</option>
+                        <option value="math_quick" {% if game == 'math_quick' %}selected{% endif %}>Math Quick Solve</option>
+                        <option value="riddle" {% if game == 'riddle' %}selected{% endif %}>Riddle Challenge</option>
+                        <option value="vocabulary" {% if game == 'vocabulary' %}selected{% endif %}>Vocabulary Trainer</option>
+                        <option value="storytelling" {% if game == 'storytelling' %}selected{% endif %}>Storytelling Mode</option>
+                    </select>
+                </div>
+                
+                <form method="POST" action="/admin/reset-scores" class="reset-form" onsubmit="return confirmReset()">
+                    <select name="game">
+                        <option value="all">All Games</option>
+                        <option value="knowledge_check">Knowledge Check</option>
+                        <option value="math_quick">Math Quick Solve</option>
+                        <option value="riddle">Riddle Challenge</option>
+                        <option value="vocabulary">Vocabulary Trainer</option>
+                        <option value="storytelling">Storytelling Mode</option>
+                    </select>
+                    <button type="submit" class="btn btn-danger">Reset Scores</button>
+                </form>
+            </div>
+            
+            {% if leaderboard %}
+            <table>
+                <thead>
+                    <tr>
+                        <th class="rank-cell">Rank</th>
+                        <th>Player</th>
+                        <th>Score</th>
+                        <th>Last Played</th>
+                        <th>Game</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for player in leaderboard %}
+                    <tr>
+                        <td class="rank-cell {% if player.rank == 1 %}rank-1{% elif player.rank == 2 %}rank-2{% elif player.rank == 3 %}rank-3{% endif %}">
+                            {% if player.rank == 1 %}🥇
+                            {% elif player.rank == 2 %}🥈
+                            {% elif player.rank == 3 %}🥉
+                            {% endif %}
+                            {{ player.rank }}
+                        </td>
+                        <td>
+                            <div class="player-cell">
+                                <div class="player-avatar">{{ player.username[0]|upper }}</div>
+                                <div style="font-weight: bold;">{{ player.username }}</div>
+                            </div>
+                        </td>
+                        <td class="score-cell">{{ player.total_score }}</td>
+                        <td style="color: #666; font-size: 14px;">{{ player.last_played }}</td>
+                        <td style="color: #666; font-size: 14px;">
+                            {% if game %}
+                                {{ game.replace('_', ' ').title() }}
+                            {% else %}
+                                All Games
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="icon">🏆</div>
+                <h3>No Leaderboard Data</h3>
+                <p>No players have scores yet for {% if game %}{{ game.replace('_', ' ').title() }}{% else %}any games{% endif %}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        function filterByGame() {
+            const game = document.getElementById('gameFilter').value;
+            const url = game ? `/admin/leaderboard?game=${game}` : '/admin/leaderboard';
+            window.location.href = url;
+        }
+        
+        function confirmReset() {
+            const gameSelect = document.querySelector('.reset-form select');
+            const game = gameSelect.options[gameSelect.selectedIndex].text;
+            
+            if (game === 'All Games') {
+                return confirm('⚠️ Are you sure you want to reset ALL scores for ALL players?\n\nThis will notify all players and cannot be undone.');
+            }
+            
+            return confirm(`⚠️ Are you sure you want to reset scores for "${game}"?\n\nThis will notify affected players and cannot be undone.`);
+        }
+    </script>
+</body>
+</html>
