@@ -1,0 +1,174 @@
+{
+  "knowledge_check": [
+    {
+      "question": "What is the capital of France?",
+      "options": ["London", "Berlin", "Paris", "Madrid"],
+      "answer": 2
+    },
+    {
+      "question": "Which planet is known as the Red Planet?",
+      "options": ["Venus", "Mars", "Jupiter", "Saturn"],
+      "answer": 1
+    },
+    {
+      "question": "What is the largest mammal in the world?",
+      "options": ["Elephant", "Blue Whale", "Giraffe", "Polar Bear"],
+      "answer": 1
+    },
+    {
+      "question": "How many continents are there?",
+      "options": ["5", "6", "7", "8"],
+      "answer": 2
+    },
+    {
+      "question": "What is the chemical symbol for gold?",
+      "options": ["Go", "Gd", "Au", "Ag"],
+      "answer": 2
+    }
+  ],
+  "math_quick": [
+    {
+      "question": "What is 15 + 27?",
+      "options": ["32", "42", "52", "62"],
+      "answer": 1
+    },
+    {
+      "question": "What is 8 × 7?",
+      "options": ["48", "56", "64", "72"],
+      "answer": 1
+    },
+    {
+      "question": "What is 144 ÷ 12?",
+      "options": ["10", "11", "12", "13"],
+      "answer": 2
+    },
+    {
+      "question": "What is 25 - 13?",
+      "options": ["10", "11", "12", "13"],
+      "answer": 2
+    },
+    {
+      "question": "What is 9²?",
+      "options": ["72", "81", "90", "99"],
+      "answer": 1
+    }
+  ],
+  "riddle": [
+    {
+      "question": "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
+      "options": ["Echo", "Whisper", "Shadow", "Thought"],
+      "answer": 0
+    },
+    {
+      "question": "The more you take, the more you leave behind. What am I?",
+      "options": ["Footsteps", "Breath", "Money", "Time"],
+      "answer": 0
+    },
+    {
+      "question": "I have keys but no locks. I have space but no room. You can enter but can't go outside. What am I?",
+      "options": ["Keyboard", "Map", "Book", "Computer"],
+      "answer": 0
+    },
+    {
+      "question": "What has a heart that doesn't beat?",
+      "options": ["Artichoke", "Robot", "Clock", "Deck of cards"],
+      "answer": 3
+    },
+    {
+      "question": "I'm tall when I'm young and short when I'm old. What am I?",
+      "options": ["Tree", "Candle", "Person", "Pencil"],
+      "answer": 1
+    }
+  ],
+  "vocabulary": [
+    {
+      "question": "What does 'ephemeral' mean?",
+      "options": ["Lasting forever", "Lasting a short time", "Very large", "Very small"],
+      "answer": 1
+    },
+    {
+      "question": "What does 'benevolent' mean?",
+      "options": ["Kind and generous", "Selfish and greedy", "Intelligent and wise", "Strong and powerful"],
+      "answer": 0
+    },
+    {
+      "question": "What does 'meticulous' mean?",
+      "options": ["Careless", "Showing great attention to detail", "Very fast", "Very slow"],
+      "answer": 1
+    },
+    {
+      "question": "What does 'ambiguous' mean?",
+      "options": ["Clear and precise", "Open to more than one interpretation", "Very funny", "Very serious"],
+      "answer": 1
+    },
+    {
+      "question": "What does 'resilient' mean?",
+      "options": ["Able to recover quickly from difficulties", "Very weak", "Very rich", "Very intelligent"],
+      "answer": 0
+    }
+  ],
+  "sound_identification": [
+    {
+      "question": "Identify this sound",
+      "options": ["Rain", "Thunder", "Birds", "Wind"],
+      "answer": 1,
+      "audio": "/sounds/thunder.mp3"
+    },
+    {
+      "question": "What animal makes this sound?",
+      "options": ["Dog", "Cat", "Bird", "Cow"],
+      "answer": 0,
+      "audio": "/sounds/dog.mp3"
+    },
+    {
+      "question": "Identify this musical instrument",
+      "options": ["Piano", "Guitar", "Violin", "Drums"],
+      "answer": 1,
+      "audio": "/sounds/guitar.mp3"
+    },
+    {
+      "question": "What vehicle makes this sound?",
+      "options": ["Car", "Train", "Airplane", "Motorcycle"],
+      "answer": 0,
+      "audio": "/sounds/car.mp3"
+    },
+    {
+      "question": "Identify this nature sound",
+      "options": ["Ocean waves", "Rainforest", "Desert wind", "Mountain stream"],
+      "answer": 0,
+      "audio": "/sounds/ocean.mp3"
+    }
+  ],
+  "storytelling": [
+    {
+      "story": "Once upon a time, in a small village nestled between rolling hills, there lived a young girl named Lily who loved to explore. Every day after finishing her chores, she would venture into the nearby forest, discovering hidden paths and observing the wildlife. One sunny afternoon, while following a trail of colorful butterflies, Lily stumbled upon an ancient map hidden under a large oak tree. The map was old and fragile, with mysterious symbols marking a path to what appeared to be a hidden treasure. Excited by her discovery, Lily decided to follow the map and embark on an adventure that would change her life forever. She packed some food, told her parents she was going for a walk, and set off into the deep forest, following the map's intricate directions.",
+      "questions": [
+        {
+          "question": "What was the name of the young girl in the story?",
+          "options": ["Lucy", "Lily", "Laura", "Lena"],
+          "answer": 1
+        },
+        {
+          "question": "Where did Lily find the ancient map?",
+          "options": ["In a cave", "Under an oak tree", "By the river", "In her backyard"],
+          "answer": 1
+        },
+        {
+          "question": "What led Lily to discover the map?",
+          "options": ["A talking bird", "Colorful butterflies", "A dream", "An old book"],
+          "answer": 1
+        },
+        {
+          "question": "What did the map contain?",
+          "options": ["Secret recipes", "Mysterious symbols", "Family history", "Weather patterns"],
+          "answer": 1
+        },
+        {
+          "question": "What did Lily do after finding the map?",
+          "options": ["She forgot about it", "She showed it to her friends", "She followed the map on an adventure", "She sold it at the market"],
+          "answer": 2
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin Panel</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:Arial,Helvetica,sans-serif;padding:20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;color:#fff}
+    .container{max-width:1000px;margin:32px auto}
+    .card{background:#fff;color:#222;border-radius:14px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,0.15)}
+    .header{display:flex;align-items:center;gap:16px}
+    .title{font-size:22px;color:#667eea}
+    .nav{display:flex;gap:10px;margin-top:12px}
+    .btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;border:none;cursor:pointer}
+    .btn.ghost{background:transparent;color:#667eea;border:2px solid rgba(102,126,234,0.2)}
+    .right{margin-left:auto}
+    .small{font-size:14px;color:#666}
+    form.inline{display:flex;gap:8px;align-items:center}
+    select{padding:8px;border-radius:8px;border:1px solid #ddd}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <div>
+          <div class="title">Admin Panel</div>
+          <div class="small">Manage players, leaderboards and system settings</div>
+        </div>
+        <div class="right">
+          <a class="btn" href="/admin/logout">Logout</a>
+        </div>
+      </div>
+
+      <div class="nav">
+        <a class="btn" href="/admin/players">Players</a>
+        <a class="btn" href="/admin/archive">Archive</a>
+        <a class="btn" href="/admin/leaderboard">Leaderboards</a>
+        <a class="btn" href="/admin/notifications">Notifications</a>
+        <form class="inline" method="post" action="/admin/reset-scores">
+          <select name="game">
+            <option value="all">All games</option>
+            <option value="knowledge_check">Knowledge Check</option>
+            <option value="storytelling">Storytelling</option>
+            <option value="riddle">Riddle</option>
+            <option value="vocabulary">Vocabulary</option>
+            <option value="sound_identification">Sound Identification</option>
+            <option value="math_quick">Math Quick</option>
+          </select>
+          <button class="btn" type="submit">Reset Scores</button>
+        </form>
+        <form class="inline" method="post" action="/admin/recompute-scores" style="margin-left:8px">
+          <button class="btn" type="submit">Recompute Scores</button>
+        </form>
+      </div>
+
+      <div style="margin-top:18px">Use the menu above to manage players, view archives and leaderboards.</div>
+    </div>
+  </div>
+</body>
+</html>

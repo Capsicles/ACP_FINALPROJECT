@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Leaderboard</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;padding:20px;background:linear-gradient(135deg,#667eea,#764ba2);min-height:100vh}
+    .container{max-width:900px;margin:32px auto}
+    .card{background:#fff;color:#222;border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,0.12)}
+    h1{color:#667eea;margin:0 0 12px}
+    .top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .btn{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none;border:none}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
+    .muted{color:#666;font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="top">
+        <h1>Leaderboard{{ ' - '+game if game else '' }}</h1>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          <div style="font-size:13px;color:#666">Filter:</div>
+          <a class="btn" href="/leaderboard">All</a>
+          <a class="btn" href="/leaderboard?game=knowledge_check">Knowledge</a>
+          <a class="btn" href="/leaderboard?game=math_quick">Math</a>
+          <a class="btn" href="/leaderboard?game=riddle">Riddle</a>
+          <a class="btn" href="/leaderboard?game=vocabulary">Vocabulary</a>
+          <a class="btn" href="/leaderboard?game=storytelling">Storytelling</a>
+          <a class="btn" href="/">Back</a>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Player</th><th>Score</th><th>Last Played</th></tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr>
+            <td>{{ r.username }}</td>
+            <td>{{ r.score }}</td>
+            <td class="muted">{{ r.last_played }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+        <div class="muted">Page {{ page }} of {{ total_pages }}</div>
+        <div style="display:flex;gap:8px">
+          {% if page > 1 %}
+            <a class="btn" href="/leaderboard?{% if game %}game={{game}}&{% endif %}page={{ page-1 }}">Prev</a>
+          {% endif %}
+          {% if page < total_pages %}
+            <a class="btn" href="/leaderboard?{% if game %}game={{game}}&{% endif %}page={{ page+1 }}">Next</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
