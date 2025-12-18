@@ -1,0 +1,357 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vocabulary Trainer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .card {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 32px;
+    }
+    #wordArea h2 {
+      color: #333;
+      font-size: 28px;
+      margin: 15px 0;
+    }
+    #wordArea p {
+      color: #666;
+      font-size: 18px;
+      margin: 15px 0;
+    }
+    button {
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      margin: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: rgba(102, 126, 234, 0.5) !important;
+    }
+    .vocab-opt {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      text-align: left;
+      padding: 15px 20px;
+    }
+    .vocab-opt:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    .back-home-btn {
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      display: inline-block;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    .back-home-btn:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    .home-fab { position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); right: 22px; z-index: 1000; border-radius: 999px; padding: 12px 20px; }
+    button.selected {
+      border: 3px solid #667eea;
+      background: rgba(102, 126, 234, 0.2);
+      color: #667eea;
+    }
+    #progress {
+      color: #667eea;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    .score-container {
+      text-align: center;
+      padding: 18px;
+      background: white;
+      border-radius: 15px;
+      margin: 12px 0;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    .score-title {
+      font-size: 18px;
+      color: #667eea;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .score-display {
+      font-size: 28px;
+      font-weight: bold;
+      color: #667eea;
+      margin: 10px 0;
+      padding: 8px 16px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 10px;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      display: inline-block;
+    }
+    .score-fraction {
+      font-size: 14px;
+      color: #667eea;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .score-percentage {
+      font-size: 14px;
+      color: #667eea;
+      font-weight: bold;
+      margin: 6px 0;
+    }
+    .score-message {
+      padding: 8px 14px;
+      background: rgba(102, 126, 234, 0.1);
+      color: #667eea;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-weight: 600;
+      font-size: 13px;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+    }
+    .score-message.error {
+      background: rgba(255, 71, 87, 0.1);
+      color: #ff4757;
+      border-color: rgba(255, 71, 87, 0.3);
+    }
+    .leaderboard-link {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 18px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 13px;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    .leaderboard-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    div[style*="display: flex"] > button,
+    div[style*="display: flex"] > a.back-home-btn {
+      margin: 0 !important;
+      display: inline-block !important;
+      width: auto !important;
+      text-align: center !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Vocabulary Trainer</h1>
+    <p id="progress">Word 1</p>
+    <div id="wordArea"></div>
+    <div id="choices" style="margin-top:12px"></div>
+    <button id="submitBtn" style="display:none; margin-top:12px;">Submit</button>
+    <div style="margin-top:15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <a href="/home" class="back-home-btn home-fab" onclick="try{stopAllAudio&&stopAllAudio();}catch(e){}">← Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    const vocab = {{ vocab | tojson }}; 
+    let selectedAnswer = null;
+    let answered = false;
+    let score = 0;
+    let currentQuestionIndex = 0;
+    
+    function speak(t){ 
+      if(window.speechSynthesis){ 
+        speechSynthesis.cancel(); 
+        speechSynthesis.speak(new SpeechSynthesisUtterance(t)); 
+      }
+    }
+    function stopAllAudio(){ if(window.speechSynthesis){ try{ window.speechSynthesis.cancel(); }catch(e){} } }
+    
+    async function saveScore(finalScore, totalQuestions) {
+      try {
+        const response = await fetch('/api/add-score', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            score: finalScore,
+            game: 'Vocabulary Trainer'
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          const messageDiv = document.getElementById('scoreMessage');
+          if (messageDiv) {
+            messageDiv.innerHTML = `✅ Score saved successfully!`;
+            messageDiv.className = 'score-message';
+          }
+          const leaderboardLink = document.getElementById('leaderboardLink');
+          if (leaderboardLink && data.rank) {
+            leaderboardLink.innerHTML = `View Leaderboard (Your Rank: #${data.rank}) →`;
+          }
+        } else {
+          const messageDiv = document.getElementById('scoreMessage');
+          if (messageDiv) {
+            messageDiv.innerHTML = `⚠️ Could not save score. Please try again.`;
+            messageDiv.className = 'score-message error';
+          }
+        }
+      } catch (error) {
+        console.error('Error saving score:', error);
+        const messageDiv = document.getElementById('scoreMessage');
+        if (messageDiv) {
+          messageDiv.innerHTML = `⚠️ Error saving score. Please try again.`;
+          messageDiv.className = 'score-message error';
+        }
+      }
+    }
+    
+    function render(){ 
+      if(currentQuestionIndex >= vocab.length) {
+        // All questions answered
+        const finalScore = score;
+        const totalQuestions = vocab.length;
+        const percentage = Math.round((finalScore / totalQuestions) * 100);
+        
+        // Hide progress
+        document.getElementById('progress').style.display = 'none';
+        
+        // Create score display
+        document.getElementById('wordArea').innerHTML = `
+          <div class="score-container">
+            <div class="score-title">Complete! 🎉</div>
+            <div class="score-display">${finalScore}</div>
+            <div class="score-fraction">out of ${totalQuestions} words</div>
+            <div class="score-percentage">${percentage}% Correct</div>
+            <div id="scoreMessage" class="score-message">Saving score...</div>
+            <a href="/leaderboard" id="leaderboardLink" class="leaderboard-link">View Leaderboard →</a>
+          </div>
+        `;
+        document.getElementById('choices').innerHTML = '';
+        document.getElementById('submitBtn').style.display = 'none';
+        
+        // Save score to leaderboard
+        saveScore(finalScore, totalQuestions);
+        return;
+      }
+      
+      selectedAnswer = null;
+      answered = false;
+      const w=vocab[currentQuestionIndex]; 
+      document.getElementById('progress').style.display = 'block';
+      document.getElementById('progress').textContent = `Word ${currentQuestionIndex+1} of ${vocab.length}`;
+      document.getElementById('wordArea').innerHTML = `<h2>${w.word}</h2><p>${w.definition}</p><button onclick=\"speak('${w.word}')\">🔊 Pronounce</button>`;
+      document.getElementById('choices').innerHTML = w.choices.map((c,idx)=>`<div><button class="vocab-opt" onclick="selectAnswer(${idx})">${String.fromCharCode(65+idx)}. ${c}</button></div>`).join('');
+      // Automatically play pronunciation
+      speak(w.word);
+      // No submit button needed for automatic flow
+    }
+    
+    function selectAnswer(idx){
+      if(answered) return;
+      stopAllAudio();
+      selectedAnswer = idx;
+      const buttons = document.querySelectorAll('.vocab-opt');
+      // Remove previous selection
+      buttons.forEach(btn => {
+        btn.classList.remove('selected');
+        btn.style.background = '';
+        btn.style.color = '';
+      });
+      // Highlight selected option
+      buttons[idx].classList.add('selected');
+      // Show feedback and move to next automatically
+      answered = true;
+      const w = vocab[currentQuestionIndex];
+      if(selectedAnswer === w.correct) {
+        score++;
+        buttons[selectedAnswer].style.background='#2ed573';
+        buttons[selectedAnswer].style.color='white';
+      } else {
+        buttons[selectedAnswer].style.background='#ff4757';
+        buttons[selectedAnswer].style.color='white';
+        // Highlight correct answer
+        buttons[w.correct].style.background='#2ed573';
+        buttons[w.correct].style.color='white';
+      }
+      // Disable all options
+      buttons.forEach(btn => btn.disabled = true);
+      setTimeout(() => {
+        currentQuestionIndex++;
+        render();
+      }, 1200);
+    }
+    
+    
+    function nextQuestion() {
+      currentQuestionIndex++;
+      render();
+    }
+    
+    // keyboard 1-4 support
+    document.addEventListener('keydown', (e)=>{ 
+      if(!answered && ['1','2','3','4'].includes(e.key)){ 
+        const idx = Number(e.key)-1; 
+        const btn = document.querySelectorAll('.vocab-opt')[idx]; 
+        if(btn && !btn.disabled) btn.click(); 
+      }
+    });
+    
+    // voice: accept digit words or numbers
+    if(window.webkitSpeechRecognition || window.SpeechRecognition){ 
+      const Rec = window.SpeechRecognition || window.webkitSpeechRecognition; 
+      const r = new Rec(); 
+      r.lang='en-US'; 
+      r.continuous=true; 
+      r.onresult = (ev)=>{ 
+        if(answered) return;
+        const t = ev.results[ev.results.length-1][0].transcript.trim().toLowerCase(); 
+        if(/(\b1\b|one)/.test(t)){ document.querySelectorAll('.vocab-opt')[0].click(); } 
+        else if(/(\b2\b|two)/.test(t)){ document.querySelectorAll('.vocab-opt')[1].click(); } 
+        else if(/(\b3\b|three)/.test(t)){ document.querySelectorAll('.vocab-opt')[2].click(); } 
+        else if(/(\b4\b|four)/.test(t)){ document.querySelectorAll('.vocab-opt')[3].click(); } 
+        else { 
+          const m = t.match(/([a-d])/); 
+          if(m){ const idx = m[1].charCodeAt(0)-97; document.querySelectorAll('.vocab-opt')[idx].click(); } 
+        } 
+      }; 
+      try{ r.start(); }catch(e){} 
+    }
+    
+    
+    render();
+  </script>
+</body>
+</html>

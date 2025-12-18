@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - HearMeOut</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            padding: 40px 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+              radial-gradient(1000px 600px at 10% 10%, rgba(255,255,255,0.08), transparent 60%),
+              radial-gradient(900px 500px at 90% 20%, rgba(255,255,255,0.06), transparent 55%),
+              linear-gradient(135deg, #1f2348 0%, #2b2e6b 35%, #5b3ea1 70%, #a057e7 100%);
+            background-size: 200% 200%;
+            animation: bgShift 15s ease-in-out infinite;
+            color: #e8eafc;
+        }
+        @keyframes bgShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; }
+        h1 {
+            font-size: 40px; margin-bottom: 8px;
+            background: linear-gradient(90deg, #c4b5fd 0%, #ffffff 40%, #c4b5fd 100%);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            text-shadow: 0 6px 26px rgba(0,0,0,.25);
+            letter-spacing: .5px;
+        }
+        .subtitle { font-size: 16px; opacity: .95; color: #e8eafc; }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card {
+            position: relative;
+            background: rgba(255,255,255,0.12);
+            border:1px solid rgba(255,255,255,0.28);
+            border-radius:18px; padding:22px;
+            box-shadow: 0 20px 50px rgba(0,0,0,.35);
+            backdrop-filter: blur(10px);
+            color:#fff;
+            overflow:hidden;
+            z-index: 1; /* keep below navbar dropdown */
+        }
+        .card:before { content:''; position:absolute; inset:-2px; background: radial-gradient(500px 220px at -10% -20%, rgba(255,255,255,.25), transparent 55%); pointer-events:none; z-index: 0; }
+        .card h2 { color:#e6e8ff; font-size: 20px; margin-bottom: 12px; letter-spacing:.2px; }
+
+        .row { display: flex; gap: 10px; margin: 10px 0; align-items: center; flex-wrap: wrap; }
+        .col { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 12px; color: #e8eafc; opacity:.9; font-weight:800; letter-spacing:.3px; text-transform: uppercase; }
+        input {
+            border:1px solid rgba(255,255,255,.35);
+            background: rgba(255,255,255,.15);
+            color:#fff;
+            border-radius:12px; padding:12px 14px; font-size: 14px;
+            outline:none; transition: all .18s ease; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+            width: min(100%, 340px);
+        }
+        select {
+            border:1px solid rgba(255,255,255,.35);
+            background: rgba(255,255,255,.15);
+            color:#fff;
+            border-radius:12px; padding:12px 14px; width: 100%; font-size: 14px;
+            outline:none; transition: all .18s ease; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+        }
+        input::placeholder { color: rgba(255,255,255,.75); }
+        input:focus, select:focus { border-color:#c4b5fd; box-shadow: 0 0 0 3px rgba(196,181,253,.25), inset 0 0 0 1px rgba(255,255,255,.1); }
+
+        .btn {
+            background: linear-gradient(135deg, #7c3aed 0%, #22d3ee 100%);
+            color:#0b1025; border:0; padding:12px 16px; border-radius:12px;
+            font-weight:900; cursor:pointer; font-size:14px;
+            box-shadow: 0 10px 24px rgba(124,58,237,.35), 0 4px 10px rgba(34,211,238,.25);
+            transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+            text-decoration:none; display:inline-block;
+        }
+        .btn:hover { transform: translateY(-1px) scale(1.01); filter: brightness(1.03); box-shadow: 0 14px 32px rgba(124,58,237,.45), 0 6px 16px rgba(34,211,238,.32); }
+        .btn:active { transform: translateY(0); }
+
+        .muted { color: #aeb6ff; font-size: 13px; }
+        .msg { margin-top: 8px; font-size: 13px; color: #e6e8ff; }
+
+        .collapse { display: none; }
+        .collapse.open { display: block; }
+        .iframe-wrap { border: 1px solid rgba(255,255,255,.28); border-radius: 14px; overflow: hidden; background: rgba(255,255,255,.08); backdrop-filter: blur(6px); z-index: 1; position: relative; }
+        iframe { width: 100%; height: 500px; border: 0; background: rgba(255,255,255,.92); }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 30px; }
+        }
+    </style>
+    <link rel="icon" href="data:,">
+</head>
+<body>
+    {% include 'partials/navbar.html' %}
+
+    <div class="container">
+        <header>
+            <h1>Admin Panel</h1>
+            <p class="subtitle">Manage players and scores</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Session</h2>
+                <div class="row">
+                    <div class="col" style="flex:1">
+                        <label>Current player</label>
+                        <div class="muted" id="playerName">—</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <input id="signinName" placeholder="Enter player name">
+                    <button class="btn" id="signinBtn">Sign in</button>
+                </div>
+                <div class="msg" id="signinMsg"></div>
+            </div>
+
+            <div class="card">
+                <h2>Add Score</h2>
+                <div class="row">
+                    <div class="col" style="flex:1">
+                        <label>Player name</label>
+                        <input id="scoreName" placeholder="Leave blank to use session player">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col" style="flex:1">
+                        <label>Score</label>
+                        <input id="scoreValue" type="number" placeholder="e.g. 100">
+                    </div>
+                    <div class="col" style="flex:1">
+                        <label>Game</label>
+                        <select id="scoreGame">
+                            <option>Knowledge Check</option>
+                            <option>Storytelling</option>
+                            <option>Riddle</option>
+                            <option>Vocabulary</option>
+                            <option>Sound Identification</option>
+                            <option>Math Quick Solve</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <button class="btn" id="addScoreBtn">Add score</button>
+                </div>
+                <div class="msg" id="addScoreMsg"></div>
+            </div>
+
+            <div class="card">
+                <h2>Leaderboard</h2>
+                <div class="row">
+                    <button class="btn" id="toggleLb">Show/Hide</button>
+                    <button class="btn" id="resetScoresBtn" title="Reset all scores to 0">Reset All Scores</button>
+                </div>
+                <div id="lbWrap" class="collapse">
+                    <div class="iframe-wrap">
+                        <iframe id="lbFrame" src="/leaderboard"></iframe>
+                    </div>
+                </div>
+                <div class="muted">This embeds your existing /leaderboard page.</div>
+                <div class="msg" id="resetMsg"></div>
+            </div>
+
+            <div class="card">
+                <h2>Quick Links</h2>
+                <div class="col">
+                    <a class="btn" href="/knowledge">📚 Knowledge Check</a>
+                    <a class="btn" href="/storytelling">📖 Storytelling</a>
+                    <a class="btn" href="/riddle">🧩 Riddle</a>
+                    <a class="btn" href="/vocabulary">🔤 Vocabulary</a>
+                    <a class="btn" href="/sound-id">🔊 Sound ID</a>
+                    <a class="btn" href="/math-quick">➗ Math Quick Solve</a>
+                </div>
+            </div>
+            <div class="card">
+                <h2>About Us</h2>
+                <div class="row" style="align-items:center; gap:16px;">
+                    <img src="{{ url_for('serve_images', filename='RONQUILLO, CAMILLE.jpg') }}" alt="Ronquillo, Camille" style="width:96px;height:96px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,.35);background:#fff;" />
+                    <div class="col" style="flex:1;">
+                        <div style="font-weight:900;font-size:16px;color:#e6e8ff;">Ronquillo, Camille</div>
+                        <div class="muted">Development Lead (Programmer)</div>
+                        <div class="msg">Leads development and code integration.</div>
+                    </div>
+                </div>
+                <div class="row" style="align-items:center; gap:16px; margin-top:14px;">
+                    <img src="{{ url_for('serve_images', filename='GARCIA, ZAIRAH.jpg') }}" alt="Garcia, Zairah" style="width:96px;height:96px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,.35);background:#fff;" />
+                    <div class="col" style="flex:1;">
+                        <div style="font-weight:900;font-size:16px;color:#e6e8ff;">Garcia, Zairah</div>
+                        <div class="muted">Research Lead</div>
+                        <div class="msg">Coordinates research, documentation, and evaluation.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadPlayerName() {
+            try {
+                const r = await fetch('/api/get-player');
+                const j = await r.json();
+                document.getElementById('playerName').textContent = j.player_name || '—';
+            } catch (e) {
+                document.getElementById('playerName').textContent = '—';
+            }
+        }
+
+        document.getElementById('signinBtn').addEventListener('click', async () => {
+            const name = document.getElementById('signinName').value.trim();
+            const msg = document.getElementById('signinMsg');
+            msg.textContent = '';
+            if (!name) { msg.textContent = 'Please enter a name.'; return; }
+            try {
+                const resp = await fetch('/api/signin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                const j = await resp.json();
+                msg.textContent = j.message || 'Signed in';
+                await loadPlayerName();
+            } catch (e) {
+                msg.textContent = 'Sign-in failed.';
+            }
+        });
+
+        document.getElementById('addScoreBtn').addEventListener('click', async () => {
+            const name = document.getElementById('scoreName').value.trim();
+            const score = parseInt(document.getElementById('scoreValue').value, 10) || 0;
+            const game = document.getElementById('scoreGame').value || 'Unknown';
+            const msg = document.getElementById('addScoreMsg');
+            msg.textContent = '';
+            try {
+                const resp = await fetch('/api/add-score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, score, game })
+                });
+                const j = await resp.json();
+                msg.textContent = j.message || 'Score added';
+                if (document.getElementById('lbWrap').classList.contains('open')) {
+                    document.getElementById('lbFrame').contentWindow.location.reload();
+                }
+            } catch (e) {
+                msg.textContent = 'Failed to add score.';
+            }
+        });
+
+        document.getElementById('toggleLb').addEventListener('click', () => {
+            const wrap = document.getElementById('lbWrap');
+            wrap.classList.toggle('open');
+        });
+
+        // Reset all scores (admin only)
+        document.getElementById('resetScoresBtn').addEventListener('click', async () => {
+            const msg = document.getElementById('resetMsg');
+            msg.textContent = '';
+            if(!confirm('Are you sure you want to reset ALL scores to 0?')) return;
+            try{
+                const resp = await fetch('/api/admin/reset-scores', { method:'POST' });
+                const j = await resp.json();
+                if(!resp.ok || !j.success){ msg.textContent = j.message || 'Reset failed.'; return; }
+                msg.textContent = j.message || 'Scores reset.';
+                // Refresh embedded leaderboard if visible
+                if (document.getElementById('lbWrap').classList.contains('open')) {
+                    document.getElementById('lbFrame').contentWindow.location.reload();
+                }
+            }catch(e){
+                msg.textContent = 'Reset failed.';
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', loadPlayerName);
+    </script>
+</body>
+</html>

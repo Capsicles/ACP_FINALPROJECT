@@ -1,0 +1,39 @@
+<nav class="hmo-navbar">
+  <div class="hmo-nav-inner">
+    <a class="hmo-brand" href="/home">HearMeOut</a>
+    <div class="hmo-links">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/leaderboard">Leaderboard</a>
+      <a href="/about">About Us</a>
+      <div class="hmo-dropdown">
+        <button class="hmo-dropbtn">Games ▾</button>
+        <div class="hmo-dropdown-content">
+          <a href="/knowledge">Knowledge</a>
+          <a href="/storytelling">Storytelling</a>
+          <a href="/riddle">Riddle</a>
+          <a href="/vocabulary">Vocabulary</a>
+          <a href="/sound-id">Sound ID</a>
+          <a href="/math-quick">Math Quick</a>
+        </div>
+      </div>
+      <a href="/admin">Admin</a>
+    </div>
+  </div>
+</nav>
+<style>
+  .hmo-navbar { background: rgba(255,255,255,0.9); backdrop-filter: blur(6px); border-radius: 12px; margin: 0 auto 20px; max-width: 1100px; box-shadow: 0 6px 20px rgba(0,0,0,.12); position: relative; z-index: 5000; }
+  .hmo-nav-inner { display:flex; align-items:center; justify-content:space-between; padding: 12px 18px; }
+  .hmo-brand { font-weight: 800; color:#5a67d8; text-decoration:none; font-size: 20px; letter-spacing:.2px; }
+  .hmo-links { display:flex; align-items:center; gap:14px; }
+  .hmo-links a { color:#333; text-decoration:none; font-weight:600; padding:8px 10px; border-radius:8px; }
+  .hmo-links a:hover { background:#eef2ff; color:#4c51bf; }
+  .hmo-dropdown { position: relative; display: inline-block; z-index: 6000; }
+  .hmo-dropbtn { background: transparent; border: 0; font-weight: 700; color: #333; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+  .hmo-dropbtn:hover { background:#eef2ff; color:#4c51bf; }
+  .hmo-dropdown-content { display:none; position:absolute; right:0; background:#fff; min-width: 180px; box-shadow:0 10px 25px rgba(0,0,0,.12); border-radius: 10px; overflow:hidden; z-index: 10000; }
+  .hmo-dropdown-content a { display:block; padding:10px 12px; }
+  .hmo-dropdown:hover .hmo-dropdown-content { display:block; }
+  @media (max-width: 720px) {
+    .hmo-nav-inner { flex-direction: column; gap: 8px; align-items: flex-start; }
+  }
+</style>

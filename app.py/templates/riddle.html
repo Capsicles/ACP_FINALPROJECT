@@ -1,0 +1,318 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Riddle Challenge</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 40px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .card {
+      max-width: 750px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 20px;
+      font-size: 32px;
+    }
+    #riddleArea p {
+      color: #333;
+      font-size: 20px;
+      line-height: 1.6;
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 12px;
+      border-left: 4px solid #667eea;
+    }
+    input {
+      padding: 15px;
+      width: 100%;
+      border-radius: 12px;
+      border: 2px solid rgba(102, 126, 234, 0.3);
+      font-size: 16px;
+      margin-top: 15px;
+      box-sizing: border-box;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    button {
+      padding: 12px 24px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      margin-right: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    #result {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+    .back-home-btn {
+      color: white;
+      text-decoration: none;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      display: inline-block;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    .back-home-btn:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    .home-fab { position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 24px); right: 22px; z-index: 1000; border-radius: 999px; padding: 12px 20px; }
+    .score-container {
+      text-align: center;
+      padding: 18px;
+      background: white;
+      border-radius: 15px;
+      margin: 12px 0;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    .score-title {
+      font-size: 18px;
+      color: #667eea;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .score-display {
+      font-size: 28px;
+      font-weight: bold;
+      color: #667eea;
+      margin: 10px 0;
+      padding: 8px 16px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 10px;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      display: inline-block;
+    }
+    .score-message {
+      padding: 8px 14px;
+      background: rgba(102, 126, 234, 0.1);
+      color: #667eea;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-weight: 600;
+      font-size: 13px;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+    }
+    .score-message.error {
+      background: rgba(255, 71, 87, 0.1);
+      color: #ff4757;
+      border-color: rgba(255, 71, 87, 0.3);
+    }
+    .leaderboard-link {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 18px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 13px;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    .leaderboard-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    #result {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    #result.correct {
+      background: #2ed573;
+      color: white;
+    }
+    #result.incorrect {
+      background: #ff4757;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Riddle Challenge</h1>
+    <div id="riddleArea"></div>
+    <div style="margin-top:12px"><input id="answerInput" placeholder="Type your answer here" aria-label="Answer input"></div>
+    <div style="margin-top:15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <button id="checkBtn">Check Answer</button>
+      <button id="nextBtn" disabled style="display:none;">Next</button>
+      <a href="/home" class="back-home-btn home-fab" onclick="try{stopAllAudio&&stopAllAudio();}catch(e){}">← Back to Home</a>
+    </div>
+    <div id="result" style="margin-top:12px"></div>
+  </div>
+
+  <script>
+    const riddles = {{ riddles | tojson }};
+    let currentRiddleIndex = 0;
+    let solved = false;
+    let totalScore = 0;
+    function stopAllAudio(){ if(window.speechSynthesis){ try{ speechSynthesis.cancel(); }catch(e){} } }
+    
+    function loadRiddle() {
+      if (riddles.length === 0) return;
+      
+      // Cycle through riddles
+      const riddle = riddles[currentRiddleIndex];
+      solved = false;
+    document.getElementById('riddleArea').innerHTML = `<p>${riddle.riddle}</p>`;
+      document.getElementById('answerInput').value = '';
+      document.getElementById('answerInput').disabled = false;
+      document.getElementById('checkBtn').disabled = false;
+      document.getElementById('checkBtn').style.display = 'inline-block';
+      document.getElementById('nextBtn').style.display = 'none';
+      document.getElementById('nextBtn').disabled = true;
+      document.getElementById('result').innerHTML = '';
+      document.getElementById('result').className = '';
+      if(window.speechSynthesis){ 
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(riddle.riddle); 
+        speechSynthesis.speak(u); 
+      }
+    }
+    
+    loadRiddle();
+
+    async function saveScore(score) {
+      // Show initial score display with "Saving score..." message
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = `
+        <div class="score-container" style="max-width:340px;margin:18px auto;padding:10px 8px 14px 8px;background:#fff;border-radius:13px;box-shadow:0 1px 6px rgba(102,126,234,0.13);display:flex;flex-direction:column;align-items:center;gap:7px;">
+          <div class="score-title" style="font-size:1.13em;font-weight:600;color:#667eea;margin-bottom:2px;margin-top:2px;">Riddle Solved! 🎉</div>
+          <div class="score-display" style="font-size:2.2em;font-weight:700;color:#4e54c8;line-height:1;">${score}</div>
+          <div style="font-size:12px;color:#667eea;margin-bottom:5px;font-weight:500;">Points Earned</div>
+          <div id="scoreMessage" class="score-message" style="font-size:12px;padding:4px 8px;margin-bottom:3px;margin-top:1px;border-radius:6px;background:#f5f8ff;border:1px solid #e2e8f0;color:#4eaf50;display:flex;align-items:center;gap:4px;min-height:22px;"></div>
+          <a href="/leaderboard" id="leaderboardLink" class="leaderboard-link" style="font-size:13px;padding:7px 12px;border-radius:8px;background:#6c63ff;color:#fff;font-weight:600;text-decoration:none;box-shadow:0 2px 10px rgba(108,99,255,0.15);margin-top:7px;">View Leaderboard →</a>
+        </div>
+        <style>
+        @media (max-width: 480px) {
+          .score-container { max-width:98vw; padding:7px 2vw 11px 2vw; }
+          .score-title { font-size:1em !important; }
+          .score-display { font-size:1.5em !important; }
+        }
+        </style>
+      `;
+      
+      try {
+        const response = await fetch('/api/add-score', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            score: score,
+            game: 'Riddle Challenge'
+          })
+        });
+        const data = await response.json();
+        if (data.success) {
+          // Update score message
+          const messageDiv = document.getElementById('scoreMessage');
+          if (messageDiv) {
+            messageDiv.innerHTML = `✅ Score saved successfully!`;
+            messageDiv.className = 'score-message';
+          }
+          
+          // Update leaderboard link if rank is available
+          const leaderboardLink = document.getElementById('leaderboardLink');
+          if (leaderboardLink && data.rank) {
+            leaderboardLink.innerHTML = `View Leaderboard (Your Rank: #${data.rank}) →`;
+          }
+        } else {
+          const messageDiv = document.getElementById('scoreMessage');
+          if (messageDiv) {
+            messageDiv.innerHTML = `⚠️ Could not save score. Please try again.`;
+            messageDiv.className = 'score-message error';
+          }
+        }
+      } catch (error) {
+        console.error('Error saving score:', error);
+        const messageDiv = document.getElementById('scoreMessage');
+        if (messageDiv) {
+          messageDiv.innerHTML = `⚠️ Error saving score. Please try again.`;
+          messageDiv.className = 'score-message error';
+        }
+      }
+    }
+
+    document.getElementById('checkBtn').addEventListener('click', ()=> check());
+    function check(){
+      stopAllAudio();
+      if (solved) return;
+      const riddle = riddles[currentRiddleIndex];
+      const ans = document.getElementById('answerInput').value.trim().toLowerCase();
+      const ok = riddle.answer.toLowerCase();
+      const res = document.getElementById('result');
+      if(ans.includes(ok) || ok.includes(ans) || ans===ok){
+        solved = true;
+        totalScore += 100;
+        res.className = 'correct';
+        res.innerHTML = 'Correct! 🎉';
+      } else {
+        solved = true;
+        res.className = 'incorrect';
+        res.innerHTML = 'Incorrect!<br><small style="font-size: 14px; opacity: 0.9;">Moving to next riddle...</small>';
+      }
+      document.getElementById('answerInput').disabled = true;
+      document.getElementById('checkBtn').disabled = true;
+      document.getElementById('checkBtn').style.display = 'none';
+      // If last riddle, show scoreboard
+      if (currentRiddleIndex === riddles.length - 1) {
+        setTimeout(() => {
+          saveScore(totalScore);
+        }, 1200);
+      } else {
+        // Otherwise, move to next riddle after short delay
+        setTimeout(() => {
+          currentRiddleIndex++;
+          loadRiddle();
+        }, 1200);
+      }
+    }
+    
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      stopAllAudio();
+      // Move to next riddle (cycle back to start if at end)
+      if (currentRiddleIndex === riddles.length - 1) {
+        saveScore(totalScore);
+      } else {
+        currentRiddleIndex++;
+        loadRiddle();
+      }
+    });
+
+  </script>
+</body>
+</html>
